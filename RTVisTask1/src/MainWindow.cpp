@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->setAlignment(Qt::AlignTop);
 	m_Ui->controls->setLayout(layout);
 		
-
 	m_glWidget = new GLWidget(this, this);
 	m_Ui->glLayout->addWidget(m_glWidget);
 	

@@ -8,7 +8,7 @@
 #extension GL_ARB_explicit_attrib_location : enable
 
 // Uniforms:
-uniform mat4 u_viewProjectionMatrix;
+//uniform mat4 u_viewProjectionMatrix;
 
 // Input:
 in vec3 vs_in_positionW;
@@ -19,7 +19,8 @@ out vec3 vs_out_color;
 
 void main()
 {
-	gl_Position = u_viewProjectionMatrix * vec4(vs_in_positionW, 1.0f);
+	gl_Position = vec4(vs_in_positionW, 1.0f);
+	//gl_Position = u_viewProjectionMatrix * vec4(vs_in_positionW, 1.0f);
 	vs_out_color = vs_in_color;
 }
 

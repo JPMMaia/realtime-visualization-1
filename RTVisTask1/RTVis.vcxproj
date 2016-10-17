@@ -92,6 +92,7 @@
     <ClCompile Include="src\GLWidget.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
+    <ClCompile Include="src\MoleculesBuffer.cpp" />
     <ClCompile Include="src\NetCDFLoader.cpp" />
     <ClCompile Include="src\PdbLoader.cpp" />
     <ClCompile Include="src\streamserver.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="generated\ui_MainWindow.h" />
     <ClInclude Include="src\BufferTypes.h" />
     <ClInclude Include="src\GLHelper.h" />
+    <ClInclude Include="src\MoleculesBuffer.h" />
     <ClInclude Include="src\Utilities.h" />
     <CustomBuild Include="src\streamserver.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBSOCKET_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtNetwork -Ilib\qt\include\QtWebSocket -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>

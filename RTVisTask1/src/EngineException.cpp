@@ -6,8 +6,31 @@
 #include <windows.h>
 #endif
 
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <gl/GLU.h>
+
 using namespace RTV;
 using namespace std;
+
+EngineException::EngineException(int error, const std::wstring& functionName, const std::wstring& filename, int lineNumber) :
+	m_message(L"GLError: "),
+	m_functionName(functionName),
+	m_filename(filename),
+	m_lineNumber(lineNumber)
+{
+	auto gl = QOpenGLContext::currentContext()->functions();
+
+	do
+	{
+		m_message += Utilities::StringToWString(std::string(reinterpret_cast<const char*>(gluErrorString(error))));
+	} 
+	while ((error = gl->glGetError()) != GL_NO_ERROR);
+
+#ifdef _WIN32
+	OutputDebugStringW(ToString().c_str());
+#endif
+}
 
 EngineException::EngineException(const std::wstring& message, const std::wstring& functionName, const std::wstring& filename, int lineNumber) :
 	m_message(message),
@@ -15,8 +38,16 @@ EngineException::EngineException(const std::wstring& message, const std::wstring
 	m_filename(filename),
 	m_lineNumber(lineNumber)
 {
+	auto gl = QOpenGLContext::currentContext()->functions();
+
+	int error;
+	while ((error = gl->glGetError()) != GL_NO_ERROR)
+	{
+		m_message += L" glError: " + Utilities::StringToWString(std::string(reinterpret_cast<const char*>(gluErrorString(error)))) + L"\n";
+	}
+
 #ifdef _WIN32
-	OutputDebugStringW(m_message.c_str());
+	OutputDebugStringW(ToString().c_str());
 #endif
 }
 

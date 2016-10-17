@@ -5,25 +5,51 @@
 
 namespace RTV
 {
-	struct PassConstants
+	namespace BufferTypes
 	{
-		QMatrix4x4 ViewProjectionMatrix;
-	};
+		struct PassConstants
+		{
+			QMatrix4x4 ViewProjectionMatrix;
+		};
 
-	struct VertexType
-	{
-		QVector3D PositionW;
-		QVector3D Color;
-	};
+		struct VertexType
+		{
+			VertexType() = default;
+			VertexType(const QVector3D& positionW, const QVector3D& color) : 
+				PositionW(positionW),
+				Color(color)
+			{
+			}
 
-	struct MoleculesProgramUniformLocations
-	{
-		GLint ViewProjectionMatrix;
-	};
+			QVector3D PositionW;
+			QVector3D Color;
 
-	struct MoleculesProgramAttributeLocations
-	{
-		GLint PositionW;
-		GLint Color;
-	};
+			static constexpr int PositionWTupleSize = 3;
+			static constexpr int ColorTupleSize = 3;
+
+			static constexpr int PositionWOffset()
+			{
+				return offsetof(VertexType, VertexType::PositionW);
+			}
+			static constexpr int ColorOffset()
+			{
+				return offsetof(VertexType, VertexType::Color);
+			}
+			static constexpr int Stride()
+			{
+				return sizeof(VertexType);
+			}
+		};
+
+		struct MoleculesProgramUniformLocations
+		{
+			GLint ViewProjectionMatrix;
+		};
+
+		struct MoleculesProgramAttributeLocations
+		{
+			GLint PositionW;
+			GLint Color;
+		};
+	}
 }

@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Utilities.h"
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
 
 namespace RTV
 {
@@ -8,6 +10,7 @@ namespace RTV
 	{
 	public:
 		EngineException() = default;
+		EngineException(int error, const std::wstring& functionName, const std::wstring& filename, int lineNumber);
 		EngineException(const std::wstring& message, const std::wstring& functionName, const std::wstring& filename, int lineNumber);
 
 		std::wstring ToString() const;
@@ -25,6 +28,19 @@ namespace RTV
 	std::wstring functionName = Utilities::StringToWString(__FUNCSIG__);		\
 	std::wstring filename = Utilities::StringToWString(__FILE__);				\
 	throw EngineException(message, functionName, filename, __LINE__);			\
+}
+#endif
+
+#ifndef ThrowIfGLError
+#define ThrowIfGLError()														\
+{																				\
+	auto error = QOpenGLContext::currentContext()->functions()->glGetError();	\
+	if(error != GL_NO_ERROR)\
+	{\
+		std::wstring functionName = Utilities::StringToWString(__FUNCSIG__);		\
+		std::wstring filename = Utilities::StringToWString(__FILE__);				\
+		throw EngineException(error, functionName, filename, __LINE__);		\
+	}\
 }
 #endif
 }

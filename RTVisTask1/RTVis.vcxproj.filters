@@ -70,6 +70,9 @@
     <ClCompile Include="src\GLHelper.cpp">
       <Filter>Content</Filter>
     </ClCompile>
+    <ClCompile Include="src\MoleculesBuffer.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\MainWindow.h">
@@ -117,6 +120,9 @@
       <Filter>Content\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\GLHelper.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MoleculesBuffer.h">
       <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>

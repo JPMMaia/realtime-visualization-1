@@ -8,12 +8,9 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QOpenGLWidget>
+#include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 #include <QGLShader>
-#include <QOpenGLShaderProgram>
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
 #include <QTimer>
@@ -21,6 +18,8 @@
 #include "Camera.h"
 #include "PdbLoader.h"
 #include "BufferTypes.h"
+#include "MoleculesBuffer.h"
+#include <memory>
 
 class MainWindow;
 
@@ -87,16 +86,19 @@ private:
 	void drawMolecules();
 
 	void loadMoleculeShader() const;
-	void allocateGPUBuffer(int frameNr);
+	void allocateGPUBuffer(int frameNumber);
 	void calculateFPS();
+
+	void setupDebugger();
+	static void onMessageLogged(QOpenGLDebugMessage message);
 
 private:
 	Camera m_camera;
-	size_t m_mrAtoms;
+	size_t m_moleculesCount;
 		
 	// CPU
 	std::vector<std::vector<Atom> > *m_animation;
-	std::vector<glm::vec3> m_pos;
+	std::vector<glm::vec3> m_positions;
 	std::vector<float> m_radii;
 	std::vector<glm::vec3> m_colors;
 	std::vector<glm::vec3> m_ambOcc;
@@ -139,9 +141,13 @@ private:
 	MainWindow* m_mainWindow;
 
 private:
-	RTV::PassConstants m_passConstants;
-	RTV::MoleculesProgramUniformLocations m_uniformLocations;
-	RTV::MoleculesProgramAttributeLocations m_attributeLocations;
+	RTV::BufferTypes::PassConstants m_passConstants;
+	RTV::BufferTypes::MoleculesProgramUniformLocations m_uniformLocations;
+	RTV::BufferTypes::MoleculesProgramAttributeLocations m_attributeLocations;
+
+	RTV::MoleculesBuffer m_moleculesBuffer;
+
+	std::unique_ptr<QOpenGLDebugLogger> m_logger;
 };
 
 #endif

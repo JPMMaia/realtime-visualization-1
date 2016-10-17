@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 {
 
 	QApplication app(argc, argv);
+
 	MainWindow mainWindow;
 	mainWindow.show();
 
@@ -22,5 +23,4 @@ int main(int argc, char *argv[])
 	QObject::connect(server, &StreamServer::closed, &app, &QCoreApplication::quit);
 
 	return app.exec();
-
 }

@@ -7,6 +7,7 @@
 
 #include "GLWidget.h"
 
+#include <array>
 #include <qopenglwidget.h>
 #include <QMouseEvent>
 #include <QDir>
@@ -18,12 +19,14 @@
 #include "EngineException.h"
 #include "GLHelper.h"
 
+using namespace RTV;
+
 const float msPerFrame = 50.0f;
 
 #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
 #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
 
-typedef struct 
+typedef struct
 {
 	GLuint modelViewMatrix;
 	GLuint projMatrix;
@@ -47,7 +50,13 @@ typedef struct
 
 static ShaderUniformsMolecules UniformsMolecules;
 
-using namespace RTV;
+// Create a colored triangle for testing purposes:
+static const std::array<BufferTypes::VertexType, 3> s_vertices =
+{
+	BufferTypes::VertexType(QVector3D(0.00f,  0.75f, 1.0f), QVector3D(1.0f, 0.0f, 0.0f)),
+	BufferTypes::VertexType(QVector3D(0.75f, -0.75f, 1.0f), QVector3D(0.0f, 1.0f, 0.0f)),
+	BufferTypes::VertexType(QVector3D(-0.75f, -0.75f, 1.0f), QVector3D(0.0f, 0.0f, 1.0f))
+};
 
 GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	: QOpenGLWidget(parent)
@@ -61,9 +70,9 @@ GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	QDir shaderDir(QCoreApplication::applicationDirPath() + "/../../src/shader/");
 	auto files = shaderDir.entryInfoList();
 	qDebug() << "List of shaders:";
-	foreach(QFileInfo file, files) 
+	foreach(QFileInfo file, files)
 	{
-		if (file.isFile()) 
+		if (file.isFile())
 		{
 			qDebug() << file.fileName();
 			m_fileWatcher->addPath(file.absoluteFilePath());
@@ -73,9 +82,9 @@ GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	GLWidget::initglsw();
 
 	renderMode = RenderMode::NONE;
-	isImposerRendering = false;
+	isImposerRendering = true;
 
-	m_mrAtoms = 0;
+	m_moleculesCount = 0;
 
 	ambientFactor = 0.05f;
 	diffuseFactor = 0.5f;
@@ -124,7 +133,7 @@ void GLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	if (!m_vao_molecules.create()) 
+	if (!m_vao_molecules.create())
 	{
 		qDebug() << "error creating vao";
 	}
@@ -134,7 +143,7 @@ void GLWidget::initializeGL()
 	m_geometryShader = new QOpenGLShader(QOpenGLShader::Geometry);
 	m_fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
 
-	auto total_mem_kb = 0;
+	/*auto total_mem_kb = 0;
 	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
 		&total_mem_kb);
 
@@ -145,14 +154,14 @@ void GLWidget::initializeGL()
 	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
 	m_mainWindow->displayTotalGPUMemory(total_mem_mb);
-	m_mainWindow->displayUsedGPUMemory(0);
+	m_mainWindow->displayUsedGPUMemory(0);*/
 
 	connect(&m_paintTimer, SIGNAL(timeout()), this, SLOT(update()));
 	m_paintTimer.start(16); // about 60FPS
 	m_fpsTimer.start();
 }
 
-void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
+void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom>>* animation)
 {
 	// Makes the widget's rendering context the current OpenGL rendering context:
 	makeCurrent();
@@ -161,67 +170,77 @@ void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
 
 	renderMode = RenderMode::NETCDF;
 
-	// Bind and load program:
-	m_moleculesProgram->bind();
+	// Load program:
 	loadMoleculeShader();
+	ThrowIfGLError();
 
-	// TODO: bind positions etc.
-
-	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
-	auto functions = QOpenGLContext::currentContext()->functions();
+	// Bind program:
+	if (!m_moleculesProgram->bind())
+		ThrowEngineException(L"Failed to bind program.");
 
 	// Get uniform locations:
-	m_uniformLocations.ViewProjectionMatrix = GLHelper::GetUniformLocation(*m_moleculesProgram, "u_viewProjectionMatrix");
+	//m_uniformLocations.ViewProjectionMatrix = GLHelper::GetUniformLocation(*m_moleculesProgram, "u_viewProjectionMatrix");
 
 	// Get attribute locations:
 	m_attributeLocations.PositionW = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_positionW");
 	m_attributeLocations.Color = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_color");
 
-	// Release program after everyting is bound:
+	// Create molecules buffer:
+	m_moleculesBuffer.Create(m_moleculesProgram, m_attributeLocations);
+	ThrowIfGLError();
+
+	// Release program after everyting is done:
 	m_moleculesProgram->release();
 
+	// Allocate GPU memory for frame 0:
 	allocateGPUBuffer(0);
+	ThrowIfGLError();
 }
 
-void GLWidget::allocateGPUBuffer(int frameNr)
+void GLWidget::allocateGPUBuffer(int frameNumber)
 {
-	// makes the widget's rendering context the current OpenGL rendering context
+	// Makes the widget's rendering context the current OpenGL rendering context
 	makeCurrent();
 
-	//load atoms
-	m_mrAtoms = (*m_animation)[frameNr].size();
+	m_moleculesCount = (*m_animation)[frameNumber].size();
 
-	m_pos.clear();
-	m_radii.clear();
-	m_colors.clear();
-
-	for (size_t i = 0; i < m_mrAtoms; i++)
+	// Load atoms:
 	{
-		auto atom = (*m_animation)[frameNr][i];
-		m_pos.push_back(atom.position);
-		m_radii.push_back(atom.radius);
-		m_colors.push_back(atom.color);
+		m_positions.clear();
+		m_radii.clear();
+		m_colors.clear();
+
+		for (size_t i = 0; i < m_moleculesCount; ++i)
+		{
+			auto atom = (*m_animation)[frameNumber][i];
+			m_positions.push_back(atom.position);
+			m_radii.push_back(atom.radius);
+			m_colors.push_back(atom.color);
+		}
 	}
 
+	// Allocating GPU memory for rendering:
+	//m_moleculesBuffer.Allocate(sizeof(BufferTypes::VertexType) * m_moleculesCount);
+	m_moleculesBuffer.Allocate(s_vertices.data(), sizeof(BufferTypes::VertexType) * s_vertices.size());
 
-	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
-	//auto f = QOpenGLContext::currentContext()->functions();
+	// Display used GPU memory:
+	{
+		/*
+		// Get total memory:
+		auto totalMemoryKB = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &totalMemoryKB);
+		auto totalMemoryMB = float(totalMemoryKB) / 1024.0f;
 
-	// TODO: allocate data (positions, radii, colors)
+		// Get current available memory:
+		auto currrentAvailableMemoryKB = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX, &currrentAvailableMemoryKB);
+		auto currentAvailableMemoryMB = float(currrentAvailableMemoryKB) / 1024.0f;
 
-
-	auto total_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
-		&total_mem_kb);
-
-	auto cur_avail_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
-		&cur_avail_mem_kb);
-
-	auto cur_avail_mem_mb = float(cur_avail_mem_kb) / 1024.0f;
-	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
-
-	m_mainWindow->displayUsedGPUMemory(total_mem_mb - cur_avail_mem_mb);
+		// Display used GPU memory:
+		m_mainWindow->displayUsedGPUMemory(totalMemoryMB - currentAvailableMemoryMB);
+		*/
+	}
+	ThrowIfGLError();
 }
 
 void GLWidget::loadMoleculeShader() const
@@ -237,9 +256,14 @@ void GLWidget::loadMoleculeShader() const
 		ThrowEngineException(L"Failed to compile Fragment Shader: " + m_fragmentShader->log().toStdWString());
 
 	// Add shaders to the program and link it:
-	m_moleculesProgram->addShader(m_vertexShader);
-	m_moleculesProgram->addShader(m_fragmentShader);
-	m_moleculesProgram->link();
+	if (!m_moleculesProgram->addShader(m_vertexShader))
+		ThrowEngineException(L"Failed to add vertex shader.");
+
+	if (!m_moleculesProgram->addShader(m_fragmentShader))
+		ThrowEngineException(L"Failed to add fragment shader.");
+
+	if (!m_moleculesProgram->link())
+		ThrowEngineException(L"Failed to link program.");
 }
 
 void GLWidget::paintGL()
@@ -267,22 +291,25 @@ void GLWidget::paintGL()
 
 void GLWidget::drawMolecules()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	auto gl = QOpenGLContext::currentContext()->functions();
 
-	// animate frames
-	if (m_isPlaying) 
+	// Clear back and depth buffers:
+	gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Animate frames:
+	if (m_isPlaying)
 	{
 		auto elapsed = m_AnimationTimer.elapsed() - m_lastTime;
 
 		elapsed -= msPerFrame;
-		while (elapsed > 0) 
+		while (elapsed > 0)
 		{
 			m_currentFrame++;
 			m_lastTime = m_AnimationTimer.elapsed();
 			elapsed -= msPerFrame;
 
 		}
-		if (m_currentFrame >= (*m_animation).size()) 
+		if (m_currentFrame >= (*m_animation).size())
 		{
 			m_currentFrame = static_cast<int>(m_animation->size() - 1);
 			m_isPlaying = false;
@@ -292,20 +319,28 @@ void GLWidget::drawMolecules()
 		allocateGPUBuffer(m_currentFrame);
 	}
 
-
 	if (isImposerRendering)
 	{
-		// TODO: implement
-		// bind vertex array object and program
+		// Bind program:
+		if (!m_moleculesProgram->bind())
+			ThrowEngineException(L"Failed to bind molecules program.");
 
+		{
+			// TODO Set uniforms:
 
-		// set uniforms
+			// Bind buffer:
+			m_moleculesBuffer.Bind();
 
+			// Draw molecules:
+			gl->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(s_vertices.size()));
 
-		// draw call
-
+			// Unbing buffer:
+			m_moleculesBuffer.Release();
+		}
+		// Unbind program:
+		m_moleculesProgram->release();
 	}
-	else 
+	else
 	{
 
 		//simplistic implementation. 
@@ -362,7 +397,7 @@ void GLWidget::drawMolecules()
 
 		er = glGetError();
 
-		for (size_t i = 0; i < m_mrAtoms; i++) 
+		for (size_t i = 0; i < m_mrAtoms; i++)
 		{
 			auto atom = (*m_animation)[m_currentFrame][i];
 			glPushMatrix();
@@ -405,6 +440,33 @@ void GLWidget::calculateFPS()
 	}
 
 	m_mainWindow->displayFPS(static_cast<int>(m_fps));
+}
+
+void GLWidget::setupDebugger()
+{
+	QOpenGLContext *ctx = QOpenGLContext::currentContext();
+	if (!ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
+		ThrowEngineException(L"Debug logger is not supported.");
+
+	m_logger = std::make_unique<QOpenGLDebugLogger>(this);;
+
+	connect(
+		m_logger.get(),
+		SIGNAL(messageLogged(QOpenGLDebugMessage)),
+		this,
+		SLOT(onMessageLogged(QOpenGLDebugMessage)),
+		Qt::DirectConnection
+	);
+
+	if (!m_logger->initialize())
+		ThrowEngineException(L"Couldn't initialize logger.");
+
+	m_logger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+	m_logger->enableMessages();
+}
+void GLWidget::onMessageLogged(QOpenGLDebugMessage message)
+{
+	qDebug() << message;
 }
 
 void GLWidget::resizeGL(int w, int h)
