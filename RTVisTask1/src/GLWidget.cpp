@@ -16,6 +16,7 @@
 #include "glsw.h"
 #include "MainWindow.h"
 #include "EngineException.h"
+#include "GLHelper.h"
 
 const float msPerFrame = 50.0f;
 
@@ -51,7 +52,7 @@ using namespace RTV;
 GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	: QOpenGLWidget(parent)
 {
-	m_MainWindow = mainWindow;
+	m_mainWindow = mainWindow;
 	m_fileWatcher = new QFileSystemWatcher(this);
 	connect(m_fileWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(fileChanged(const QString &)));
 
@@ -143,11 +144,11 @@ void GLWidget::initializeGL()
 
 	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
-	m_MainWindow->displayTotalGPUMemory(total_mem_mb);
-	m_MainWindow->displayUsedGPUMemory(0);
+	m_mainWindow->displayTotalGPUMemory(total_mem_mb);
+	m_mainWindow->displayUsedGPUMemory(0);
 
-	connect(&mPaintTimer, SIGNAL(timeout()), this, SLOT(update()));
-	mPaintTimer.start(16); // about 60FPS
+	connect(&m_paintTimer, SIGNAL(timeout()), this, SLOT(update()));
+	m_paintTimer.start(16); // about 60FPS
 	m_fpsTimer.start();
 }
 
@@ -164,11 +165,17 @@ void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
 	m_moleculesProgram->bind();
 	loadMoleculeShader();
 
+	// TODO: bind positions etc.
+
 	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
 	auto functions = QOpenGLContext::currentContext()->functions();
 
-	
-	// TODO: bind positions etc.
+	// Get uniform locations:
+	m_uniformLocations.ViewProjectionMatrix = GLHelper::GetUniformLocation(*m_moleculesProgram, "u_viewProjectionMatrix");
+
+	// Get attribute locations:
+	m_attributeLocations.PositionW = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_positionW");
+	m_attributeLocations.Color = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_color");
 
 	// Release program after everyting is bound:
 	m_moleculesProgram->release();
@@ -214,7 +221,7 @@ void GLWidget::allocateGPUBuffer(int frameNr)
 	auto cur_avail_mem_mb = float(cur_avail_mem_kb) / 1024.0f;
 	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
-	m_MainWindow->displayUsedGPUMemory(total_mem_mb - cur_avail_mem_mb);
+	m_mainWindow->displayUsedGPUMemory(total_mem_mb - cur_avail_mem_mb);
 }
 
 void GLWidget::loadMoleculeShader() const
@@ -234,7 +241,6 @@ void GLWidget::loadMoleculeShader() const
 	m_moleculesProgram->addShader(m_fragmentShader);
 	m_moleculesProgram->link();
 }
-
 
 void GLWidget::paintGL()
 {
@@ -282,7 +288,7 @@ void GLWidget::drawMolecules()
 			m_isPlaying = false;
 		}
 
-		m_MainWindow->setAnimationFrameGUI(m_currentFrame);
+		m_mainWindow->setAnimationFrameGUI(m_currentFrame);
 		allocateGPUBuffer(m_currentFrame);
 	}
 
@@ -398,7 +404,7 @@ void GLWidget::calculateFPS()
 		m_frameCount = 0;
 	}
 
-	m_MainWindow->displayFPS(static_cast<int>(m_fps));
+	m_mainWindow->displayFPS(static_cast<int>(m_fps));
 }
 
 void GLWidget::resizeGL(int w, int h)

@@ -7,21 +7,19 @@
 
 #extension GL_ARB_explicit_attrib_location : enable
 
-struct PassConstants
-{
-	mat4 ViewProjectionMatrix;
-};
+// Uniforms:
+uniform mat4 u_viewProjectionMatrix;
 
-uniform PassConstants g_pass;
-
+// Input:
 in vec3 vs_in_positionW;
 in vec3 vs_in_color;
 
+// Output:
 out vec3 vs_out_color;
 
 void main()
 {
-	gl_Position = g_pass.ViewProjectionMatrix * vec4(vs_in_positionW, 1.0f);
+	gl_Position = u_viewProjectionMatrix * vec4(vs_in_positionW, 1.0f);
 	vs_out_color = vs_in_color;
 }
 
@@ -35,12 +33,10 @@ void main()
 
 --Fragment
 
-struct VertexOutput
-{
-	vec3 Color;
-};
-
+// Input:
 in vec3 vs_out_color;
+
+// Output:
 out vec4 fs_out_color;
 
 void main()

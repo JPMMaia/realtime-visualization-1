@@ -22,6 +22,9 @@
     <Filter Include="Content">
       <UniqueIdentifier>{032a174f-2f70-4cad-bd68-4d892ed07c1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content\Resources">
+      <UniqueIdentifier>{46e9a870-d067-4162-8784-07e6e00b0532}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MainWindow.cpp">
@@ -62,6 +65,9 @@
       <Filter>Content</Filter>
     </ClCompile>
     <ClCompile Include="src\Utilities.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLHelper.cpp">
       <Filter>Content</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,6 +111,12 @@
       <Filter>Content</Filter>
     </ClInclude>
     <ClInclude Include="src\Utilities.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BufferTypes.h">
+      <Filter>Content\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLHelper.h">
       <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>

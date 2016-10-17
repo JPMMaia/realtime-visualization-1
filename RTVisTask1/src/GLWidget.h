@@ -20,6 +20,7 @@
 
 #include "Camera.h"
 #include "PdbLoader.h"
+#include "BufferTypes.h"
 
 class MainWindow;
 
@@ -81,18 +82,16 @@ protected slots:
 
 private:
 
+	static void initglsw();
+
 	void drawMolecules();
 
 	void loadMoleculeShader() const;
-
-	static void initglsw();
-
 	void allocateGPUBuffer(int frameNr);
-
 	void calculateFPS();
 
+private:
 	Camera m_camera;
-
 	size_t m_mrAtoms;
 		
 	// CPU
@@ -120,7 +119,7 @@ private:
 	int m_projMatrixLoc;
 	int m_mvMatrixLoc;
 	
-	QFileSystemWatcher *m_fileWatcher;
+	QFileSystemWatcher* m_fileWatcher;
 
 	int m_currentFrame;
 	bool m_isPlaying;
@@ -134,10 +133,15 @@ private:
 	qint64 m_previousTimeFPS;
 	QElapsedTimer m_fpsTimer;
 	
-	// triggers the rendering events
-	QTimer mPaintTimer;
+	// Triggers the rendering events
+	QTimer m_paintTimer;
 
-	MainWindow *m_MainWindow;
+	MainWindow* m_mainWindow;
+
+private:
+	RTV::PassConstants m_passConstants;
+	RTV::MoleculesProgramUniformLocations m_uniformLocations;
+	RTV::MoleculesProgramAttributeLocations m_attributeLocations;
 };
 
 #endif
