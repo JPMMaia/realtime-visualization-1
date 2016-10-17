@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<style type="text/css">
+html, body { margin: 0; background-color: black; color: white; }
+</style>
+<meta charset="utf-8" />
+
+<script language="javascript" type="text/javascript">
+    var wsUri = "ws://localhost:1234",
+        websock = new WebSocket(wsUri);
+
+    var websocket = {
+        open: function (evt) {
+            console.log("req_image");
+            websock.send("req_image");
+        },
+        close: function (evt) {
+			setTimeout(function () { window.location.href = 'client.html'; }, 3000);
+			document.write('Socket disconnected. Restarting..');
+        },
+        message: function (evt) {
+            var bytes = new Uint8Array(evt.data),
+                    binary = "",
+                    len = bytes.byteLength,
+                    i;
+
+            for (i=0; i<len; i++)
+                binary += String.fromCharCode(bytes[i]);
+
+            screenImage.set(binary);
+        },
+        error: function (evt) {
+            console.log('error', evt);
+        }
+    };
+
+    var dragFlag = 0;
+
+    var screenImage = {
+        mouseMoveTimer : null,
+        dragstart : function (e) {
+            return false;
+        },
+        mousedown : function (e) {
+            dragFlag = 1;
+
+            var rect = this.getBoundingClientRect();
+            var x = e.x - rect.left,
+                y = e.y - rect.top;
+
+            //console.log("req_down_mouse_xy " + Math.round(x) + " " + Math.round(y));
+            websock.send("req_down_mouse_xy " + Math.round(x) + " " + Math.round(y));
+            setTimeout(function () { 
+                //console.log("req_image");
+                websock.send("req_image");
+            }, 200);
+        },
+        mouseup : function (e) {
+            dragFlag = 0;
+            
+            var rect = this.getBoundingClientRect();
+            var x = e.x - rect.left,
+                y = e.y - rect.top;
+            //console.log("req_up_mouse_xy " + Math.round(x) + " " + Math.round(y));
+            websock.send("req_up_mouse_xy " + Math.round(x) + " " + Math.round(y));
+            setTimeout(function () { 
+                //console.log("req_image");
+                websock.send("req_image");
+            }, 200);
+        },
+        mousemove : function (e) {
+            if (this.mouseMoveTimer || !dragFlag)
+                return;
+            this.mouseMoveTimer = setTimeout(function () {
+                var rect = this.getBoundingClientRect();
+                var x = e.x - rect.left,
+                    y = e.y - rect.top;
+                //console.log("req_move_mouse_xy " + Math.round(x) + " " + Math.round(y));
+                websock.send("req_move_mouse_xy " + Math.round(x) + " " + Math.round(y));
+                this.mouseMoveTimer = null;
+            }.bind(this), 20);
+        },
+        mousewheel : function (e) {
+            var rect = this.getBoundingClientRect();
+            var x = e.x - rect.left,
+                y = e.y - rect.top;
+
+	               // cross-browser wheel delta
+	               var e = window.event || e; // old IE support
+	               var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+
+            console.log(delta);
+
+            websock.send("req_wheel " + Math.round(x) + " " + Math.round(y) + " " + delta);
+            setTimeout(function () { 
+                websock.send("req_image");
+            }, 200);
+        },
+        set : function (binary) {
+            var img;
+            if (!(img = document.querySelector('img'))) {
+                img = document.createElement("img");
+                img.ondragstart = this.dragstart;
+                img.onmousedown = this.mousedown;
+                img.onmouseup = this.mouseup;
+                img.onmousemove = this.mousemove;
+				        img.onmousewheel = this.mousewheel;
+            }
+            img.src = "data:image/jpg;base64,"+window.btoa( binary );
+            document.body.appendChild(img);
+        }
+    };
+
+    function init()
+    {
+        websock.binaryType = "arraybuffer";
+
+        websock.onopen = websocket.open;
+        websock.onclose = websocket.close;
+        websock.onmessage = websocket.message;
+        websock.onerror = websocket.error
+    }
+
+    window.addEventListener("load", init, false);
+
+</script>
