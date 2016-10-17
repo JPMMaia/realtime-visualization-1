@@ -16,6 +16,12 @@
     <Filter Include="Generated Files">
       <UniqueIdentifier>{ff0668fb-73e3-40b8-97e4-f42fdd682edd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e0beb79d-82cf-4178-9793-c06d396afdec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{032a174f-2f70-4cad-bd68-4d892ed07c1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MainWindow.cpp">
@@ -51,6 +57,12 @@
     </ClCompile>
     <ClCompile Include="generated\moc_streamserver.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EngineException.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utilities.cpp">
+      <Filter>Content</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,5 +101,16 @@
     <ClInclude Include="src\Commons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\EngineException.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utilities.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shader\Molecules.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

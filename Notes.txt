@@ -1,0 +1,19 @@
+General Schema
+	For each impostor, we send four vertices with appropriate values.
+	
+	A vertex program is dedicated to expand the processed primitive.
+	The initial vertex position is projected and the impostor is then expanded in image space. This happens differently for the two primitives (see Sec. 3.3).
+	Constant per-primitive parameters (e.g. base atom color) are passed down unchanged by the vertex program to the fragment processor.
+	
+	
+	The fragment program computes and then processes the required fields, including membership, u¡v texture position, depth, or lighting (according to need of the current rendering mode and rendering pass).
+	Depending on the rendering technique, the final values are written either in the current screen buffers or in intermediate textures for subsequent passes.
+	
+	
+Parameterizing the surface of a molecule
+
+	We assign to each instance of sphere or cylinder a unique rectangular (non necessarily squared) patch of texture space. All patches have the same height so that they can be trivially packed in a single global texture. During any rendering that requires texture accesses, the 2D offset of the patch, relative to the origin of the the global texture, is sent as an additional attribute.
+	
+	See Spheres: impostors.
+	
+	Ignore Cylinders

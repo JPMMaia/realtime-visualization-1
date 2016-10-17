@@ -7,27 +7,43 @@
 
 #extension GL_ARB_explicit_attrib_location : enable
 
-//variables
-
-void main(void)
+struct PassConstants
 {
-	
+	mat4 ViewProjectionMatrix;
+};
+
+uniform PassConstants g_pass;
+
+in vec3 vs_in_positionW;
+in vec3 vs_in_color;
+
+out vec3 vs_out_color;
+
+void main()
+{
+	gl_Position = g_pass.ViewProjectionMatrix * vec4(vs_in_positionW, 1.0f);
+	vs_out_color = vs_in_color;
 }
 
--- Geometry
+/*-- Geometry
 
 variables
 
 void main()
 {	
-	
-}  
+} */ 
 
--- Fragment
+--Fragment
 
-variables
+struct VertexOutput
+{
+	vec3 Color;
+};
+
+in vec3 vs_out_color;
+out vec4 fs_out_color;
 
 void main()
 {
-	
+	fs_out_color = vec4(vs_out_color, 1.0f);
 }

@@ -15,13 +15,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "glsw.h"
 #include "MainWindow.h"
+#include "EngineException.h"
 
 const float msPerFrame = 50.0f;
 
 #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
 #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
 
-typedef struct {
+typedef struct 
+{
 	GLuint modelViewMatrix;
 	GLuint projMatrix;
 	GLuint nearPlane;
@@ -44,7 +46,7 @@ typedef struct {
 
 static ShaderUniformsMolecules UniformsMolecules;
 
-
+using namespace RTV;
 
 GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	: QOpenGLWidget(parent)
@@ -52,7 +54,6 @@ GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	m_MainWindow = mainWindow;
 	m_fileWatcher = new QFileSystemWatcher(this);
 	connect(m_fileWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(fileChanged(const QString &)));
-
 
 	// watch all shader of the shader folder 
 	// every time a shader changes it will be recompiled on the fly
@@ -71,7 +72,7 @@ GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 	GLWidget::initglsw();
 
 	renderMode = RenderMode::NONE;
-	isImposerRendering = true;
+	isImposerRendering = false;
 
 	m_mrAtoms = 0;
 
@@ -107,7 +108,7 @@ void GLWidget::cleanup()
 	// makes the widget's rendering context the current OpenGL rendering context
 	makeCurrent();
 	//m_vao.destroy
-	m_program_molecules = nullptr;
+	m_moleculesProgram = nullptr;
 	doneCurrent();
 }
 
@@ -127,9 +128,9 @@ void GLWidget::initializeGL()
 		qDebug() << "error creating vao";
 	}
 
-	m_program_molecules = new QOpenGLShaderProgram();
+	m_moleculesProgram = new QOpenGLShaderProgram();
 	m_vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-	m_geomShader = new QOpenGLShader(QOpenGLShader::Geometry);
+	m_geometryShader = new QOpenGLShader(QOpenGLShader::Geometry);
 	m_fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
 
 	auto total_mem_kb = 0;
@@ -152,26 +153,25 @@ void GLWidget::initializeGL()
 
 void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
 {
-	// makes the widget's rendering context the current OpenGL rendering context
+	// Makes the widget's rendering context the current OpenGL rendering context:
 	makeCurrent();
 
 	m_animation = animation;
 
 	renderMode = RenderMode::NETCDF;
 
-
-	// TODO: uncomment after shader is correctly loaded
-	//	m_program_molecules->bind();
-
+	// Bind and load program:
+	m_moleculesProgram->bind();
 	loadMoleculeShader();
 
 	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
-	//auto f = QOpenGLContext::currentContext()->functions();
+	auto functions = QOpenGLContext::currentContext()->functions();
 
+	
 	// TODO: bind positions etc.
 
-	// TODO: uncomment after shader is correctly loaded
-	//	m_program_molecules->release();
+	// Release program after everyting is bound:
+	m_moleculesProgram->release();
 
 	allocateGPUBuffer(0);
 }
@@ -217,30 +217,22 @@ void GLWidget::allocateGPUBuffer(int frameNr)
 	m_MainWindow->displayUsedGPUMemory(total_mem_mb - cur_avail_mem_mb);
 }
 
-bool GLWidget::loadMoleculeShader()
+void GLWidget::loadMoleculeShader() const
 {
-	//TODO: This has been commented out as the example shader contains just some basic information
-	/*
+	// Compile vertex shader:
+	auto vertexShader = glswGetShader("Molecules.Vertex");
+	if (!m_vertexShader->compileSourceCode(vertexShader))
+		ThrowEngineException(L"Failed to compile Vertex Shader: " + m_vertexShader->log().toStdWString());
 
-	bool success = false;
+	// Compile fragment shader:
+	auto fragmentShader = glswGetShader("Molecules.Fragment");
+	if (!m_fragmentShader->compileSourceCode(fragmentShader))
+		ThrowEngineException(L"Failed to compile Fragment Shader: " + m_fragmentShader->log().toStdWString());
 
-	const char *vs = glswGetShader("molecules.Vertex");
-	success = m_vertexShader->compileSourceCode(vs);
-
-	const char *gs = glswGetShader("molecules.Geometry");
-	success = m_geomShader->compileSourceCode(gs);
-
-	const char *fs = glswGetShader("molecules.Fragment");
-	success = m_fragmentShader->compileSourceCode(fs);
-
-	m_program_molecules->addShader(m_vertexShader);
-	m_program_molecules->addShader(m_geomShader);
-	m_program_molecules->addShader(m_fragmentShader);
-	m_program_molecules->link();
-
-	*/
-
-	return true;
+	// Add shaders to the program and link it:
+	m_moleculesProgram->addShader(m_vertexShader);
+	m_moleculesProgram->addShader(m_fragmentShader);
+	m_moleculesProgram->link();
 }
 
 
@@ -354,7 +346,7 @@ void GLWidget::drawMolecules()
 
 
 		glLoadIdentity();
-		GLenum er = glGetError();
+		auto er = glGetError();
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glm::value_ptr(m_camera.getProjectionMatrix()));
 		glMatrixMode(GL_MODELVIEW);

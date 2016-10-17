@@ -83,7 +83,7 @@ private:
 
 	void drawMolecules();
 
-	bool loadMoleculeShader();
+	void loadMoleculeShader() const;
 
 	static void initglsw();
 
@@ -103,10 +103,10 @@ private:
 	std::vector<glm::vec3> m_ambOcc;
 	
 	// GPU
-	QOpenGLShaderProgram *m_program_molecules;
+	QOpenGLShaderProgram *m_moleculesProgram;
 	QOpenGLVertexArrayObject m_vao_molecules;
 	QOpenGLShader *m_vertexShader;
-	QOpenGLShader *m_geomShader;
+	QOpenGLShader *m_geometryShader;
 	QOpenGLShader *m_fragmentShader;
 
 	QOpenGLBuffer m_vbo_pos;
