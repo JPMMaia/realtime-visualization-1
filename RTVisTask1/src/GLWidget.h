@@ -29,9 +29,9 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
 	GLWidget(QWidget *parent, MainWindow *mainWindow);
-	~GLWidget();
+	virtual ~GLWidget();
 
-	void createSphere(int lats, int longs);
+	static void createSphere(int lats, int longs);
 
 	void moleculeRenderMode(std::vector<std::vector<Atom> > *animation);
 
@@ -85,7 +85,7 @@ private:
 
 	bool loadMoleculeShader();
 
-	void initglsw();
+	static void initglsw();
 
 	void allocateGPUBuffer(int frameNr);
 

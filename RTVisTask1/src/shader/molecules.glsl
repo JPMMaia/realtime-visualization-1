@@ -5,11 +5,9 @@
 
 -- Vertex
 
-
 #extension GL_ARB_explicit_attrib_location : enable
 
 //variables
-
 
 void main(void)
 {
@@ -28,8 +26,6 @@ void main()
 -- Fragment
 
 variables
-
-
 
 void main()
 {

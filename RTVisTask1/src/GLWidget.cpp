@@ -56,16 +56,19 @@ GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
 
 	// watch all shader of the shader folder 
 	// every time a shader changes it will be recompiled on the fly
-	QDir shaderDir(QCoreApplication::applicationDirPath() + "/../../src/shader/");	
-	QFileInfoList files = shaderDir.entryInfoList();
+	QDir shaderDir(QCoreApplication::applicationDirPath() + "/../../src/shader/");
+	auto files = shaderDir.entryInfoList();
 	qDebug() << "List of shaders:";
-	foreach(QFileInfo file, files) {
-		if (file.isFile()) {
+	foreach(QFileInfo file, files) 
+	{
+		if (file.isFile()) 
+		{
 			qDebug() << file.fileName();
 			m_fileWatcher->addPath(file.absoluteFilePath());
 		}
 	}
-	initglsw();
+
+	GLWidget::initglsw();
 
 	renderMode = RenderMode::NONE;
 	isImposerRendering = true;
@@ -84,11 +87,16 @@ GLWidget::~GLWidget()
 	glswShutdown();
 }
 
+void GLWidget::createSphere(int lats, int longs)
+{
+	// TODO ?
+}
+
 void GLWidget::initglsw()
 {
 	glswInit();
-	QString str = QCoreApplication::applicationDirPath() + "/../../src/shader/";
-	QByteArray ba = str.toLatin1();
+	auto str = QCoreApplication::applicationDirPath() + "/../../src/shader/";
+	auto ba = str.toLatin1();
 	const char *shader_path = ba.data();
 	glswSetPath(shader_path, ".glsl");
 	glswAddDirectiveToken("", "#version 330");
@@ -99,7 +107,7 @@ void GLWidget::cleanup()
 	// makes the widget's rendering context the current OpenGL rendering context
 	makeCurrent();
 	//m_vao.destroy
-	m_program_molecules = 0;
+	m_program_molecules = nullptr;
 	doneCurrent();
 }
 
@@ -114,26 +122,25 @@ void GLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	if (!m_vao_molecules.create()) {
+	if (!m_vao_molecules.create()) 
+	{
 		qDebug() << "error creating vao";
 	}
-	
+
 	m_program_molecules = new QOpenGLShaderProgram();
 	m_vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
 	m_geomShader = new QOpenGLShader(QOpenGLShader::Geometry);
 	m_fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
 
-
-	GLint total_mem_kb = 0;
+	auto total_mem_kb = 0;
 	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
 		&total_mem_kb);
 
-	GLint cur_avail_mem_kb = 0;
+	auto cur_avail_mem_kb = 0;
 	glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
 		&cur_avail_mem_kb);
 
-	float cur_avail_mem_mb = float(cur_avail_mem_kb) / 1024.0f;
-	float total_mem_mb = float(total_mem_kb) / 1024.0f;
+	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
 	m_MainWindow->displayTotalGPUMemory(total_mem_mb);
 	m_MainWindow->displayUsedGPUMemory(0);
@@ -142,9 +149,6 @@ void GLWidget::initializeGL()
 	mPaintTimer.start(16); // about 60FPS
 	m_fpsTimer.start();
 }
-
-
-
 
 void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
 {
@@ -156,20 +160,18 @@ void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom> > *animation)
 	renderMode = RenderMode::NETCDF;
 
 
-	//todo: uncomment after shader is correctly loaded
-//	m_program_molecules->bind();
+	// TODO: uncomment after shader is correctly loaded
+	//	m_program_molecules->bind();
 
 	loadMoleculeShader();
 
 	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
-	QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+	//auto f = QOpenGLContext::currentContext()->functions();
 
 	// TODO: bind positions etc.
 
-
-	
-	//todo: uncomment after shader is correctly loaded
-//	m_program_molecules->release();
+	// TODO: uncomment after shader is correctly loaded
+	//	m_program_molecules->release();
 
 	allocateGPUBuffer(0);
 }
@@ -178,7 +180,6 @@ void GLWidget::allocateGPUBuffer(int frameNr)
 {
 	// makes the widget's rendering context the current OpenGL rendering context
 	makeCurrent();
-
 
 	//load atoms
 	m_mrAtoms = (*m_animation)[frameNr].size();
@@ -189,7 +190,7 @@ void GLWidget::allocateGPUBuffer(int frameNr)
 
 	for (size_t i = 0; i < m_mrAtoms; i++)
 	{
-		Atom atom = (*m_animation)[frameNr][i];
+		auto atom = (*m_animation)[frameNr][i];
 		m_pos.push_back(atom.position);
 		m_radii.push_back(atom.radius);
 		m_colors.push_back(atom.color);
@@ -197,21 +198,21 @@ void GLWidget::allocateGPUBuffer(int frameNr)
 
 
 	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao_molecules);
-	QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+	//auto f = QOpenGLContext::currentContext()->functions();
 
 	// TODO: allocate data (positions, radii, colors)
-	
 
-	GLint total_mem_kb = 0;
+
+	auto total_mem_kb = 0;
 	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
 		&total_mem_kb);
 
-	GLint cur_avail_mem_kb = 0;
+	auto cur_avail_mem_kb = 0;
 	glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
 		&cur_avail_mem_kb);
 
-	float cur_avail_mem_mb = float(cur_avail_mem_kb) / 1024.0f;
-	float total_mem_mb = float(total_mem_kb) / 1024.0f;
+	auto cur_avail_mem_mb = float(cur_avail_mem_kb) / 1024.0f;
+	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
 	m_MainWindow->displayUsedGPUMemory(total_mem_mb - cur_avail_mem_mb);
 }
@@ -238,8 +239,6 @@ bool GLWidget::loadMoleculeShader()
 	m_program_molecules->link();
 
 	*/
-	
-	
 
 	return true;
 }
@@ -248,15 +247,19 @@ bool GLWidget::loadMoleculeShader()
 void GLWidget::paintGL()
 {
 	calculateFPS();
-	switch (renderMode) {
+	switch (renderMode)
+	{
 	case(RenderMode::NONE):
 		break; // do nothing
+
 	case(RenderMode::PDB):
 		// TODO:
 		break;
+
 	case(RenderMode::NETCDF):
 		drawMolecules();
 		break;
+
 	default:
 		break;
 
@@ -264,48 +267,52 @@ void GLWidget::paintGL()
 }
 
 
-void GLWidget::drawMolecules() 
+void GLWidget::drawMolecules()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// animate frames
-	if (m_isPlaying) {
-		qint64 elapsed = m_AnimationTimer.elapsed() - m_lastTime;
-		
+	if (m_isPlaying) 
+	{
+		auto elapsed = m_AnimationTimer.elapsed() - m_lastTime;
+
 		elapsed -= msPerFrame;
-		while (elapsed > 0) {
+		while (elapsed > 0) 
+		{
 			m_currentFrame++;
 			m_lastTime = m_AnimationTimer.elapsed();
 			elapsed -= msPerFrame;
-			
+
 		}
-		if (m_currentFrame >= (*m_animation).size()) {
-			m_currentFrame = (*m_animation).size() - 1;
+		if (m_currentFrame >= (*m_animation).size()) 
+		{
+			m_currentFrame = static_cast<int>(m_animation->size() - 1);
 			m_isPlaying = false;
 		}
-		
+
 		m_MainWindow->setAnimationFrameGUI(m_currentFrame);
 		allocateGPUBuffer(m_currentFrame);
 	}
 
 
-	if (isImposerRendering) {
-		//todo:implement
+	if (isImposerRendering)
+	{
+		// TODO: implement
 		// bind vertex array object and program
 
 
 		// set uniforms
-		
+
 
 		// draw call
 
 	}
-	else { 
-		
+	else 
+	{
+
 		//simplistic implementation. 
-		
-		
-		size_t m_mrAtoms = (*m_animation)[m_currentFrame].size();
+
+		auto m_mrAtoms = (*m_animation)[m_currentFrame].size();
 
 
 		ambientFactor = 0.05f;
@@ -325,7 +332,7 @@ void GLWidget::drawMolecules()
 		glLoadIdentity();
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_LIGHTING);
-		
+
 		glDepthFunc(GL_LEQUAL);
 		glClearDepth(1.0f);
 
@@ -340,9 +347,9 @@ void GLWidget::drawMolecules()
 		glColorMaterial(GL_FRONT, GL_DIFFUSE);
 		glColorMaterial(GL_FRONT, GL_SPECULAR);
 		glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
-		
 
-		
+
+
 		//transformations etc.
 
 
@@ -355,11 +362,11 @@ void GLWidget::drawMolecules()
 
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-
 		er = glGetError();
 
-		for (size_t i = 0; i < m_mrAtoms; i++) { //
-			Atom atom = (*m_animation)[m_currentFrame][i];
+		for (size_t i = 0; i < m_mrAtoms; i++) 
+		{
+			auto atom = (*m_animation)[m_currentFrame][i];
 			glPushMatrix();
 			GLUquadric *quad;
 			quad = gluNewQuadric();
@@ -382,12 +389,12 @@ void GLWidget::calculateFPS()
 {
 	m_frameCount++;
 
-	qint64 currentTime = m_fpsTimer.elapsed();
+	auto currentTime = m_fpsTimer.elapsed();
 
 	//  Calculate time passed
-	qint64 timeInterval = currentTime - m_previousTimeFPS;
+	auto timeInterval = currentTime - m_previousTimeFPS;
 
-	if (timeInterval > ((qint64)1000))
+	if (timeInterval > static_cast<qint64>(1000))
 	{
 		// calculate the number of frames per second
 		m_fps = m_frameCount / (timeInterval / 1000.0f);
@@ -399,10 +406,8 @@ void GLWidget::calculateFPS()
 		m_frameCount = 0;
 	}
 
-	m_MainWindow->displayFPS(m_fps);
+	m_MainWindow->displayFPS(static_cast<int>(m_fps));
 }
-
-
 
 void GLWidget::resizeGL(int w, int h)
 {
