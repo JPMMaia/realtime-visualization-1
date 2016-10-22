@@ -53,13 +53,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include;lib\qt\include\QtNetwork;lib\qt\include\QtWebSockets</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions); NDEBUG; _DEBUG;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib\glew\lib;lib\qt\lib;lib\netCDF 4.4.1\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32d.lib;opengl32.lib;glu32.lib;Qt5CLucened.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;Qt5OpenGLExtensionsd.lib;Qt5PlatformSupportd.lib;Qt5UiToolsd.lib;Qt5Widgetsd.lib;qtmaind.lib;Qt5Xmld.lib;netcdf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32d.lib;opengl32.lib;glu32.lib;Qt5CLucened.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;Qt5OpenGLExtensionsd.lib;Qt5PlatformSupportd.lib;Qt5UiToolsd.lib;Qt5Widgetsd.lib;qtmaind.lib;Qt5Xmld.lib;netcdf.lib;Qt5Networkd.lib;Qt5WebSocketsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

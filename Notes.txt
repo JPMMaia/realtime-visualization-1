@@ -2,7 +2,7 @@ General Schema
 	For each impostor, we send four vertices with appropriate values.
 	
 	A vertex program is dedicated to expand the processed primitive.
-	The initial vertex position is projected and the impostor is then expanded in image space. This happens differently for the two primitives (see Sec. 3.3).
+	The initial vertex position is projected and the impostor is then expanded in image space.
 	Constant per-primitive parameters (e.g. base atom color) are passed down unchanged by the vertex program to the fragment processor.
 	
 	
