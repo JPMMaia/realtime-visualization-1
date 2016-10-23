@@ -42,19 +42,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutDir>bin\release\</OutDir>
-    <IntDir>tmp\release\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutDir>bin\debug\</OutDir>
-    <IntDir>tmp\debug\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include;lib\qt\include\QtNetwork;lib\qt\include\QtWebSockets;OpenGLEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include;lib\qt\include\QtNetwork;lib\qt\include\QtWebSockets;OpenGLEngine;.\GeneratedFiles</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions); NDEBUG; _DEBUG;</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -69,8 +71,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include;lib\qt\include\QtNetwork;lib\qt\include\QtWebSockets</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;generated;lib;lib\glew\include;lib\qt\include;lib\qt\include\QtCLucene;lib\qt\include\QtCore;lib\qt\include\QtGui;lib\qt\include\QtOpenGL;lib\qt\include\QtOpenGLExtensions;lib\qt\include\QtPlatformSupport;lib\qt\include\QtUiTools;lib\qt\include\QtWidgets;lib\qt\include\QtZlib;lib\glm;lib\glsw;lib\qt\include\QtXml;lib\netCDF 4.4.1\include;lib\qt\include\QtNetwork;lib\qt\include\QtWebSockets;.\GeneratedFiles</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -81,6 +85,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeneratedFiles\qrc_shaders.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_textures.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="generated\moc_GLWidget.cpp" />
     <ClCompile Include="generated\moc_MainWindow.cpp" />
     <ClCompile Include="generated\moc_streamserver.cpp" />
@@ -96,38 +112,38 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\MainWindow.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing MainWindow.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" -DNDEBUG -D_DEBUG "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I.\OpenGLEngine" "-I$(NOINHERIT)\."</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing MainWindow.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I$(NOINHERIT)\."</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\ui_MainWindow.h" />
+    <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="src\BufferTypes.h" />
     <CustomBuild Include="src\streamserver.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBSOCKET_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtNetwork -Ilib\qt\include\QtWebSocket -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBSOCKET_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtNetwork -Ilib\qt\include\QtWebSocket -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I$(NOINHERIT)\."</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing streamserver.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" -DNDEBUG -D_DEBUG "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I.\OpenGLEngine" "-I$(NOINHERIT)\."</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing streamserver.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="src\GLWidget.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe %(FullPath) -DUNICODE -Dx64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -Isrc -Ilib\base -Ilib\gms -Ilib\glew\include -Ilib\qt\include -Ilib\qt\include\QtCLucene -Ilib\qt\include\QtCore -Ilib\qt\include\QtGui -Ilib\qt\include\QtOpenGL -Ilib\qt\include\QtOpenGLExtensions -Ilib\qt\include\QtPlatformSupport -Ilib\qt\include\QtUiTools -Ilib\qt\include\QtWidgets -Ilib\qt\include\QtZlib -o generated\moc_%(Filename).cpp</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling %(Filename).%(Extension) using MOC</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">generated\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\moc.exe</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" -DNDEBUG -D_DEBUG "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I.\OpenGLEngine" "-I$(NOINHERIT)\."</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\generated\moc_%(Filename).cpp"  -D_MBCS "-D\"$(INHERIT)\"" "-I.\src" "-I.\generated" "-I.\lib" "-I.\lib\glew\include" "-I.\lib\qt\include" "-I.\lib\qt\include\QtCLucene" "-I.\lib\qt\include\QtCore" "-I.\lib\qt\include\QtGui" "-I.\lib\qt\include\QtOpenGL" "-I.\lib\qt\include\QtOpenGLExtensions" "-I.\lib\qt\include\QtPlatformSupport" "-I.\lib\qt\include\QtUiTools" "-I.\lib\qt\include\QtWidgets" "-I.\lib\qt\include\QtZlib" "-I.\lib\glm" "-I.\lib\glsw" "-I.\lib\qt\include\QtXml" "-I.\lib\netCDF 4.4.1\include" "-I.\lib\qt\include\QtNetwork" "-I.\lib\qt\include\QtWebSockets" "-I$(NOINHERIT)\."</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing GLWidget.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing GLWidget.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\generated\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="src\bstrlib.h" />
     <ClInclude Include="src\Camera.h" />
@@ -138,19 +154,45 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\MainWindow.ui">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\uic.exe</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UIC %(Filename).ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">generated\ui_%(Filename).h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lib\qt\bin\uic.exe -o generated\ui_%(Filename).h %(FullPath)</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\uic.exe</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UIC %(Filename).ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">generated\ui_%(Filename).h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lib\qt\bin\uic.exe -o generated\ui_%(Filename).h %(FullPath)</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders.qrc" />
-    <None Include="res\textures.qrc" />
+    <None Include="res\fshader.glsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <CustomBuild Include="res\shaders.qrc">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(FullPath);.\res\vshader.glsl;.\res\fshader.glsl;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(FullPath);.\res\vshader.glsl;.\res\fshader.glsl;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+    </CustomBuild>
+    <CustomBuild Include="res\textures.qrc">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(FullPath);.\res\cube.jpg;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(FullPath);.\res\cube.jpg;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Rcc%27ing %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+    </CustomBuild>
+    <None Include="res\vshader.glsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="src\shader\Molecules.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -158,7 +200,18 @@
       <Project>{c5caa26d-9064-49c1-8129-4d6f9ccf8b6c}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\cube.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Image>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" Qt5Version_x0020_x64="msvc2015_64" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

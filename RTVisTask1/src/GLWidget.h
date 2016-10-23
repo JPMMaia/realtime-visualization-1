@@ -14,7 +14,6 @@
 #include "OpenGLEngine/Graphics.h"
 
 #include <QOpenGLDebugLogger>
-#include <QOpenGLFunctions>
 #include <QGLShader>
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
@@ -26,7 +25,7 @@
 
 class MainWindow;
 
-class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
+class GLWidget : public QOpenGLWidget
 {
 	Q_OBJECT
 

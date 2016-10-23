@@ -33,7 +33,7 @@ void Graphics::OnResize(int width, int height)
 
 void Graphics::Update()
 {
-	// Decrease angular speed (friction)
+	/*// Decrease angular speed (friction)
 	m_angularSpeed *= 0.99;
 
 	// Stop rotation when speed goes below threshold
@@ -45,7 +45,7 @@ void Graphics::Update()
 	{
 		// Update rotation
 		m_rotation = QQuaternion::fromAxisAndAngle(m_rotationAxis, m_angularSpeed) * m_rotation;
-	}
+	}*/
 }
 void Graphics::Render()
 {

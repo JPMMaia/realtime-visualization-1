@@ -13,14 +13,18 @@
 
 int main(int argc, char *argv[])
 {
+	QApplication application(argc, argv);
+	application.setApplicationName("RTVis");
 
-	QApplication app(argc, argv);
+	QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	QSurfaceFormat::setDefaultFormat(format);
 
 	MainWindow mainWindow;
 	mainWindow.show();
 
-	StreamServer *server = new StreamServer(1234, false, mainWindow, app.devicePixelRatio());
-	QObject::connect(server, &StreamServer::closed, &app, &QCoreApplication::quit);
+	auto server = new StreamServer(1234, false, mainWindow, application.devicePixelRatio());
+	QObject::connect(server, &StreamServer::closed, &application, &QCoreApplication::quit);
 
-	return app.exec();
+	return application.exec();
 }

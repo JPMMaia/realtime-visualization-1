@@ -17,7 +17,8 @@
 #include "glsw.h"
 #include "MainWindow.h"
 #include "EngineException.h"
-#include "GLHelper.h"
+
+#include <QCoreApplication>
 
 const float msPerFrame = 50.0f;
 
@@ -39,7 +40,7 @@ GLWidget::~GLWidget()
 void GLWidget::MoleculeRenderMode(std::vector<std::vector<Atom>>* animation)
 {
 	// Makes the widget's rendering context the current OpenGL rendering context:
-	makeCurrent();
+	QOpenGLWidget::makeCurrent();
 
 	m_animation = animation;
 	m_renderMode = RenderMode::NETCDF;

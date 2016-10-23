@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	format.setDepthBufferSize(24);
 	QSurfaceFormat::setDefaultFormat(format);
 
-	application.setApplicationName("cube");
+	application.setApplicationName("OpenGLEngine");
 	application.setApplicationVersion("0.1");
 
 	MainWidget widget;
