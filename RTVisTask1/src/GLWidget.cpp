@@ -133,11 +133,7 @@ void GLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	if (!m_vao_molecules.create())
-	{
-		qDebug() << "error creating vao";
-	}
-
+	// Initialize shaders:
 	m_moleculesProgram = new QOpenGLShaderProgram();
 	m_vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
 	m_geometryShader = new QOpenGLShader(QOpenGLShader::Geometry);
@@ -291,10 +287,8 @@ void GLWidget::paintGL()
 
 void GLWidget::drawMolecules()
 {
-	auto gl = QOpenGLContext::currentContext()->functions();
-
 	// Clear back and depth buffers:
-	gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Animate frames:
 	if (m_isPlaying)
@@ -332,7 +326,7 @@ void GLWidget::drawMolecules()
 			m_moleculesBuffer.Bind();
 
 			// Draw molecules:
-			gl->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(s_vertices.size()));
+			glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(s_vertices.size()));
 
 			// Unbing buffer:
 			m_moleculesBuffer.Release();
