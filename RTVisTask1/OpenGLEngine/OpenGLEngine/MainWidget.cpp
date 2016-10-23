@@ -13,7 +13,7 @@ void MainWidget::mousePressEvent(QMouseEvent* event)
 	m_mousePressPosition = QVector2D(event->localPos());
 }
 
-void MainWidget::mouseReleaseEvent(QMouseEvent* event)
+void MainWidget::mouseReleaseEvent(QMouseEvent*)
 {
 	// Mouse release position - mouse press position
 	//auto diff = QVector2D(event->localPos()) - m_mousePressPosition;
@@ -32,7 +32,7 @@ void MainWidget::mouseReleaseEvent(QMouseEvent* event)
 	//m_angularSpeed += acc;
 }
 
-void MainWidget::timerEvent(QTimerEvent* event)
+void MainWidget::timerEvent(QTimerEvent*)
 {
 	// Update graphics component:
 	m_graphics.Update();

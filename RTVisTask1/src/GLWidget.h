@@ -8,17 +8,19 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include "Camera.h"
+#include "PdbLoader.h"
+#include "BufferTypes.h"
+
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions>
 #include <QGLShader>
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
 #include <QTimer>
-
-#include "Camera.h"
-#include "PdbLoader.h"
-#include "BufferTypes.h"
-#include "MoleculesBuffer.h"
+#include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
 #include <memory>
 
 class MainWindow;
@@ -28,73 +30,60 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 	Q_OBJECT
 
 public:
-	GLWidget(QWidget *parent, MainWindow *mainWindow);
-	virtual ~GLWidget();
-
-	static void createSphere(int lats, int longs);
-
-	void moleculeRenderMode(std::vector<std::vector<Atom> > *animation);
-
-	void playAnimation();
-	void pauseAnimation();
-	void setAnimationFrame(int frameNr);
-
-	float ambientFactor;
-	float diffuseFactor;
-	float specularFactor;
-	bool isImposerRendering;
-
-	inline QImage getImage()
-	{
-		return this->grabFramebuffer();
-	}
-
 	enum RenderMode
 	{
 		NONE,
 		PDB,
 		NETCDF
-	} renderMode;
+	};
+
+public:
+	GLWidget(QWidget* parent, MainWindow* mainWindow);
+	virtual ~GLWidget();
+
+	void MoleculeRenderMode(std::vector<std::vector<Atom>>* animation);
+
+	void PlayAnimation();
+	void PauseAnimation();
+	void SetAnimationFrame(int frameNumber);
+
+	QImage GetImage();
+	void SetAmbientFactor(float value);
+	void SetDiffuseFactor(float value);
+	void SetSpecularFactor(float value);
+	void SetIsImposerRendering(bool value);
 
 public slots:
-	void cleanup();
-
-signals:
+	void Cleanup();
 
 protected:
 
-	void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
 
-	void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
-	void keyReleaseEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
-
-	void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
-
+	void keyPressEvent(QKeyEvent* event) override;
+	void keyReleaseEvent(QKeyEvent* event) override;
 
 protected slots:
 
-	void paintGL() Q_DECL_OVERRIDE;
-	void initializeGL() Q_DECL_OVERRIDE;
-	void resizeGL(int w, int h) Q_DECL_OVERRIDE;
-	void fileChanged(const QString &path);
+	void initializeGL() override;
+	void resizeGL(int width, int height) override;
+	void paintGL() override;
+	void fileChanged(const QString& path);
 
 private:
-
-	static void initglsw();
-
-	void drawMolecules();
-
-	void loadMoleculeShader() const;
-	void allocateGPUBuffer(int frameNumber);
-	void calculateFPS();
-
-	void setupDebugger();
-	static void onMessageLogged(QOpenGLDebugMessage message);
+	void InitializeFileWatcher();
+	static void InitializeGLSW();
+	void InitializeMoleculeShader() const;
+	void DrawMolecules();
+	void AllocateGPUBuffer(int frameNumber);
+	void CalculateFPS();
+	
+	void SetupDebugger();
+	static void OnMessageLogged(QOpenGLDebugMessage message);
 
 private:
-	Camera m_camera;
-	size_t m_moleculesCount;
 		
 	// CPU
 	std::vector<std::vector<Atom> > *m_animation;
@@ -123,7 +112,7 @@ private:
 	
 	QFileSystemWatcher* m_fileWatcher;
 
-	int m_currentFrame;
+	int m_currentFrame = 0;
 	bool m_isPlaying;
 	qint64 m_lastTime;
 
@@ -141,11 +130,13 @@ private:
 	MainWindow* m_mainWindow;
 
 private:
-	RTV::BufferTypes::PassConstants m_passConstants;
-	RTV::BufferTypes::MoleculesProgramUniformLocations m_uniformLocations;
-	RTV::BufferTypes::MoleculesProgramAttributeLocations m_attributeLocations;
-
-	RTV::MoleculesBuffer m_moleculesBuffer;
+	Camera m_camera;
+	size_t m_moleculesCount = 0;
+	RenderMode m_renderMode = RenderMode::NONE;
+	float m_ambientFactor = 0.05f;
+	float m_diffuseFactor = 0.5f;
+	float m_specularFactor = 0.3f;
+	bool m_isImposerRendering = true;
 
 	std::unique_ptr<QOpenGLDebugLogger> m_logger;
 };

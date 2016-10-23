@@ -61,18 +61,6 @@
     <ClCompile Include="generated\moc_streamserver.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EngineException.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utilities.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GLHelper.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MoleculesBuffer.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\MainWindow.h">
@@ -110,20 +98,8 @@
     <ClInclude Include="src\Commons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\EngineException.h">
-      <Filter>Content</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utilities.h">
-      <Filter>Content</Filter>
-    </ClInclude>
     <ClInclude Include="src\BufferTypes.h">
       <Filter>Content\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GLHelper.h">
-      <Filter>Content</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MoleculesBuffer.h">
-      <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

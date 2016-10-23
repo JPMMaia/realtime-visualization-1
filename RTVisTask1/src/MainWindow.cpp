@@ -87,7 +87,7 @@ void MainWindow::openFileAction()
 			success = NetCDFLoader::readData(filename, m_animation, &nrFrames, m_Ui->progressBar);
 					
 			m_Ui->frame_slider->setMaximum(nrFrames);
-			m_glWidget->moleculeRenderMode(&m_animation);
+			m_glWidget->MoleculeRenderMode(&m_animation);
 
 		}
 
@@ -111,34 +111,34 @@ void MainWindow::openFileAction()
 void MainWindow::frameChanged(int value)
 {
 	if (value < m_animation.size()) {
-		m_glWidget->setAnimationFrame(value);
+		m_glWidget->SetAnimationFrame(value);
 	}
 	m_glWidget->update();
 }
 
 void MainWindow::ambientChanged(double value)
 {
-	m_glWidget->ambientFactor = value;
+	m_glWidget->SetAmbientFactor(static_cast<float>(value));
 	m_glWidget->update();
 }
 void MainWindow::diffuseChanged(double value)
 {
-	m_glWidget->diffuseFactor = value;
+	m_glWidget->SetDiffuseFactor(static_cast<float>(value));
 	m_glWidget->update();
 }
 void MainWindow::specularChanged(double value)
 {
-	m_glWidget->specularFactor = value;
+	m_glWidget->SetSpecularFactor(static_cast<float>(value));
 	m_glWidget->update();
 }
 
 void MainWindow::renderModeChanged(int index)
 {
 	if (index == 0) {
-		m_glWidget->isImposerRendering = true;
+		m_glWidget->SetIsImposerRendering(true);
 	}
 	else {
-		m_glWidget->isImposerRendering = false;
+		m_glWidget->SetIsImposerRendering(false);
 	}
 	m_glWidget->update();
 }
@@ -151,12 +151,12 @@ void MainWindow::closeAction()
 
 void MainWindow::playAnimation()
 {
-	m_glWidget->playAnimation();
+	m_glWidget->PlayAnimation();
 }
 
 void MainWindow::pauseAnimation()
 {
-	m_glWidget->pauseAnimation();
+	m_glWidget->PauseAnimation();
 }
 
 void MainWindow::setAnimationFrameGUI(int frame)

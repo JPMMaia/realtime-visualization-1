@@ -40,27 +40,27 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="OpenGLEngine\Scenes">
+      <UniqueIdentifier>{7189ec69-4521-4014-b536-ffc02411f8a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLEngine\Core">
+      <UniqueIdentifier>{814a6d3b-b6ed-417d-b7a4-df92c660fb6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLEngine\Utilities">
+      <UniqueIdentifier>{ba370287-f439-413e-91e3-49b8935ad112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLEngine\Resources">
+      <UniqueIdentifier>{8e7fcded-87e5-4015-8f03-1c99e67b3147}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLEngine\Models">
+      <UniqueIdentifier>{88bae82e-28ed-4a76-be09-8069ee776c0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLEngine\Widgets">
+      <UniqueIdentifier>{5bff7f1c-3d6f-4686-820d-b3f99558a35e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenGLEngine\DefaultScene.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\EngineException.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\GeometryGenerator.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\GLHelper.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\Graphics.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGLEngine\main.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\MainWidget.cpp">
       <Filter>OpenGLEngine</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainWidget.cpp">
@@ -69,69 +69,87 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MainWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLEngine\MeshGeometry.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\OpenGL.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\RenderItem.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\Utilities.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_shaders.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_textures.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenGLEngine\Utilities.cpp">
+      <Filter>OpenGLEngine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\GLHelper.cpp">
+      <Filter>OpenGLEngine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\EngineException.cpp">
+      <Filter>OpenGLEngine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\DefaultScene.cpp">
+      <Filter>OpenGLEngine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\Graphics.cpp">
+      <Filter>OpenGLEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\OpenGL.cpp">
+      <Filter>OpenGLEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\RenderItem.cpp">
+      <Filter>OpenGLEngine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\MeshGeometry.cpp">
+      <Filter>OpenGLEngine\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\GeometryGenerator.cpp">
+      <Filter>OpenGLEngine\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\MainWidget.cpp">
+      <Filter>OpenGLEngine\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="OpenGLEngine\MainWidget.h">
-      <Filter>OpenGLEngine</Filter>
-    </CustomBuild>
     <CustomBuild Include="Resources\shaders.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="Resources\textures.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="OpenGLEngine\MainWidget.h">
+      <Filter>OpenGLEngine\Widgets</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenGLEngine\DefaultScene.h">
-      <Filter>OpenGLEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLEngine\EngineException.h">
-      <Filter>OpenGLEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLEngine\GeometryGenerator.h">
-      <Filter>OpenGLEngine</Filter>
+    <ClInclude Include="OpenGLEngine\Utilities.h">
+      <Filter>OpenGLEngine\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\GLHelper.h">
-      <Filter>OpenGLEngine</Filter>
+      <Filter>OpenGLEngine\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLEngine\Graphics.h">
-      <Filter>OpenGLEngine</Filter>
+    <ClInclude Include="OpenGLEngine\EngineException.h">
+      <Filter>OpenGLEngine\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\IScene.h">
-      <Filter>OpenGLEngine</Filter>
+      <Filter>OpenGLEngine\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLEngine\MeshGeometry.h">
-      <Filter>OpenGLEngine</Filter>
+    <ClInclude Include="OpenGLEngine\DefaultScene.h">
+      <Filter>OpenGLEngine\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\Graphics.h">
+      <Filter>OpenGLEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\OpenGL.h">
-      <Filter>OpenGLEngine</Filter>
+      <Filter>OpenGLEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\RenderItem.h">
-      <Filter>OpenGLEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLEngine\Utilities.h">
-      <Filter>OpenGLEngine</Filter>
+      <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\VertexTypes.h">
-      <Filter>OpenGLEngine</Filter>
+      <Filter>OpenGLEngine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\MeshGeometry.h">
+      <Filter>OpenGLEngine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\GeometryGenerator.h">
+      <Filter>OpenGLEngine\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -122,7 +122,7 @@ void StreamServer::sendImage(QWebSocket *client, const char *format, int quality
 {
 	GLWidget *canvas = dynamic_cast<MainWindow*> (&widget)->getGLWidget();
 
-	QImage image = canvas->getImage();
+	QImage image = canvas->GetImage();
 
 
 	QByteArray ba;

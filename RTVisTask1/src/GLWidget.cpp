@@ -19,112 +19,132 @@
 #include "EngineException.h"
 #include "GLHelper.h"
 
-using namespace RTV;
-
 const float msPerFrame = 50.0f;
 
 #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
 #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
 
-typedef struct
+GLWidget::GLWidget(QWidget* parent, MainWindow* mainWindow) :
+	QOpenGLWidget(parent),
+	m_mainWindow(mainWindow)
 {
-	GLuint modelViewMatrix;
-	GLuint projMatrix;
-	GLuint nearPlane;
-	GLuint texture_AmbOccl;
-	GLuint texture_ShadowMap;
-	GLuint contourEnabled;
-	GLuint ambientOcclusionEnabled;
-	GLuint contourConstant;
-	GLuint contourWidth;
-	GLuint contourDepthFactor;
-	GLuint ambientFactor;
-	GLuint ambientIntensity;
-	GLuint diffuseFactor;
-	GLuint specularFactor;
-	GLuint shadowModelViewMatrix;
-	GLuint shadowProjMatrix;
-	GLuint lightVec;
-	GLuint shadowEnabled;
-} ShaderUniformsMolecules;
-
-static ShaderUniformsMolecules UniformsMolecules;
-
-// Create a colored triangle for testing purposes:
-static const std::array<BufferTypes::VertexType, 3> s_vertices =
-{
-	BufferTypes::VertexType(QVector3D(0.00f,  0.75f, 1.0f), QVector3D(1.0f, 0.0f, 0.0f)),
-	BufferTypes::VertexType(QVector3D(0.75f, -0.75f, 1.0f), QVector3D(0.0f, 1.0f, 0.0f)),
-	BufferTypes::VertexType(QVector3D(-0.75f, -0.75f, 1.0f), QVector3D(0.0f, 0.0f, 1.0f))
-};
-
-GLWidget::GLWidget(QWidget *parent, MainWindow *mainWindow)
-	: QOpenGLWidget(parent)
-{
-	m_mainWindow = mainWindow;
-	m_fileWatcher = new QFileSystemWatcher(this);
-	connect(m_fileWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(fileChanged(const QString &)));
-
-	// watch all shader of the shader folder 
-	// every time a shader changes it will be recompiled on the fly
-	QDir shaderDir(QCoreApplication::applicationDirPath() + "/../../src/shader/");
-	auto files = shaderDir.entryInfoList();
-	qDebug() << "List of shaders:";
-	foreach(QFileInfo file, files)
-	{
-		if (file.isFile())
-		{
-			qDebug() << file.fileName();
-			m_fileWatcher->addPath(file.absoluteFilePath());
-		}
-	}
-
-	GLWidget::initglsw();
-
-	renderMode = RenderMode::NONE;
-	isImposerRendering = true;
-
-	m_moleculesCount = 0;
-
-	ambientFactor = 0.05f;
-	diffuseFactor = 0.5f;
-	specularFactor = 0.3f;
-	m_currentFrame = 0;
+	InitializeFileWatcher();
+	InitializeGLSW();
 }
-
-
 GLWidget::~GLWidget()
 {
 	glswShutdown();
 }
 
-void GLWidget::createSphere(int lats, int longs)
+void GLWidget::MoleculeRenderMode(std::vector<std::vector<Atom>>* animation)
 {
-	// TODO ?
-}
-
-void GLWidget::initglsw()
-{
-	glswInit();
-	auto str = QCoreApplication::applicationDirPath() + "/../../src/shader/";
-	auto ba = str.toLatin1();
-	const char *shader_path = ba.data();
-	glswSetPath(shader_path, ".glsl");
-	glswAddDirectiveToken("", "#version 330");
-}
-
-void GLWidget::cleanup()
-{
-	// makes the widget's rendering context the current OpenGL rendering context
+	// Makes the widget's rendering context the current OpenGL rendering context:
 	makeCurrent();
-	//m_vao.destroy
+
+	m_animation = animation;
+	m_renderMode = RenderMode::NETCDF;
+
+	// Load program:
+	InitializeMoleculeShader();
+
+	// Allocate GPU memory for frame 0:
+	AllocateGPUBuffer(0);
+}
+
+void GLWidget::PlayAnimation()
+{
+	m_AnimationTimer.start();
+	m_lastTime = 0;
+	m_isPlaying = true;
+}
+void GLWidget::PauseAnimation()
+{
+	m_isPlaying = false;
+}
+void GLWidget::SetAnimationFrame(int frameNumber)
+{
+	m_currentFrame = frameNumber;
+	AllocateGPUBuffer(frameNumber);
+}
+
+QImage GLWidget::GetImage()
+{
+	return QOpenGLWidget::grabFramebuffer();
+}
+
+void GLWidget::SetAmbientFactor(float value)
+{
+	m_ambientFactor = value;
+}
+void GLWidget::SetDiffuseFactor(float value)
+{
+	m_diffuseFactor = value;
+}
+void GLWidget::SetSpecularFactor(float value)
+{
+	m_specularFactor = value;
+}
+void GLWidget::SetIsImposerRendering(bool value)
+{
+	m_isImposerRendering = value;
+}
+
+void GLWidget::Cleanup()
+{
+	makeCurrent();
 	m_moleculesProgram = nullptr;
 	doneCurrent();
 }
 
+void GLWidget::mousePressEvent(QMouseEvent* event)
+{
+	m_lastPos = event->pos();
+}
+void GLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	int dx = event->x() - m_lastPos.x();
+	int dy = event->y() - m_lastPos.y();
+
+	if (event->buttons() & Qt::LeftButton) {
+		m_camera.rotateAzimuth(dx / 100.0f);
+		m_camera.rotatePolar(dy / 100.0f);
+	}
+
+	if (event->buttons() & Qt::RightButton) {
+		m_camera.rotateAzimuth(dx / 100.0f);
+		m_camera.rotatePolar(dy / 100.0f);
+	}
+	m_lastPos = event->pos();
+	update();
+}
+void GLWidget::wheelEvent(QWheelEvent* event)
+{
+	m_camera.zoom(event->delta() / 30);
+	update();
+}
+
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Space:
+	{
+		break;
+	}
+	default:
+	{
+		event->ignore();
+		break;
+	}
+	}
+}
+void GLWidget::keyReleaseEvent(QKeyEvent*)
+{
+}
+
 void GLWidget::initializeGL()
 {
-	connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::cleanup);
+	connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::Cleanup);
 
 	QWidget::setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
@@ -156,116 +176,14 @@ void GLWidget::initializeGL()
 	m_paintTimer.start(16); // about 60FPS
 	m_fpsTimer.start();
 }
-
-void GLWidget::moleculeRenderMode(std::vector<std::vector<Atom>>* animation)
+void GLWidget::resizeGL(int width, int height)
 {
-	// Makes the widget's rendering context the current OpenGL rendering context:
-	makeCurrent();
-
-	m_animation = animation;
-
-	renderMode = RenderMode::NETCDF;
-
-	// Load program:
-	loadMoleculeShader();
-	ThrowIfGLError();
-
-	// Bind program:
-	if (!m_moleculesProgram->bind())
-		ThrowEngineException(L"Failed to bind program.");
-
-	// Get uniform locations:
-	//m_uniformLocations.ViewProjectionMatrix = GLHelper::GetUniformLocation(*m_moleculesProgram, "u_viewProjectionMatrix");
-
-	// Get attribute locations:
-	m_attributeLocations.PositionW = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_positionW");
-	m_attributeLocations.Color = GLHelper::GetAttributeLocation(*m_moleculesProgram, "vs_in_color");
-
-	// Create molecules buffer:
-	m_moleculesBuffer.Create(m_moleculesProgram, m_attributeLocations);
-	ThrowIfGLError();
-
-	// Release program after everyting is done:
-	m_moleculesProgram->release();
-
-	// Allocate GPU memory for frame 0:
-	allocateGPUBuffer(0);
-	ThrowIfGLError();
+	m_camera.setAspect(static_cast<float>(width) / height);
 }
-
-void GLWidget::allocateGPUBuffer(int frameNumber)
-{
-	// Makes the widget's rendering context the current OpenGL rendering context
-	makeCurrent();
-
-	m_moleculesCount = (*m_animation)[frameNumber].size();
-
-	// Load atoms:
-	{
-		m_positions.clear();
-		m_radii.clear();
-		m_colors.clear();
-
-		for (size_t i = 0; i < m_moleculesCount; ++i)
-		{
-			auto atom = (*m_animation)[frameNumber][i];
-			m_positions.push_back(atom.position);
-			m_radii.push_back(atom.radius);
-			m_colors.push_back(atom.color);
-		}
-	}
-
-	// Allocating GPU memory for rendering:
-	//m_moleculesBuffer.Allocate(sizeof(BufferTypes::VertexType) * m_moleculesCount);
-	m_moleculesBuffer.Allocate(s_vertices.data(), sizeof(BufferTypes::VertexType) * s_vertices.size());
-
-	// Display used GPU memory:
-	{
-		/*
-		// Get total memory:
-		auto totalMemoryKB = 0;
-		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &totalMemoryKB);
-		auto totalMemoryMB = float(totalMemoryKB) / 1024.0f;
-
-		// Get current available memory:
-		auto currrentAvailableMemoryKB = 0;
-		glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX, &currrentAvailableMemoryKB);
-		auto currentAvailableMemoryMB = float(currrentAvailableMemoryKB) / 1024.0f;
-
-		// Display used GPU memory:
-		m_mainWindow->displayUsedGPUMemory(totalMemoryMB - currentAvailableMemoryMB);
-		*/
-	}
-	ThrowIfGLError();
-}
-
-void GLWidget::loadMoleculeShader() const
-{
-	// Compile vertex shader:
-	auto vertexShader = glswGetShader("Molecules.Vertex");
-	if (!m_vertexShader->compileSourceCode(vertexShader))
-		ThrowEngineException(L"Failed to compile Vertex Shader: " + m_vertexShader->log().toStdWString());
-
-	// Compile fragment shader:
-	auto fragmentShader = glswGetShader("Molecules.Fragment");
-	if (!m_fragmentShader->compileSourceCode(fragmentShader))
-		ThrowEngineException(L"Failed to compile Fragment Shader: " + m_fragmentShader->log().toStdWString());
-
-	// Add shaders to the program and link it:
-	if (!m_moleculesProgram->addShader(m_vertexShader))
-		ThrowEngineException(L"Failed to add vertex shader.");
-
-	if (!m_moleculesProgram->addShader(m_fragmentShader))
-		ThrowEngineException(L"Failed to add fragment shader.");
-
-	if (!m_moleculesProgram->link())
-		ThrowEngineException(L"Failed to link program.");
-}
-
 void GLWidget::paintGL()
 {
-	calculateFPS();
-	switch (renderMode)
+	CalculateFPS();
+	switch (m_renderMode)
 	{
 	case(RenderMode::NONE):
 		break; // do nothing
@@ -275,7 +193,7 @@ void GLWidget::paintGL()
 		break;
 
 	case(RenderMode::NETCDF):
-		drawMolecules();
+		DrawMolecules();
 		break;
 
 	default:
@@ -283,9 +201,49 @@ void GLWidget::paintGL()
 
 	}
 }
+void GLWidget::fileChanged(const QString &path)
+{
+	// reboot glsw, otherwise it will use the old cached shader
+	glswShutdown();
+	InitializeGLSW();
 
+	InitializeMoleculeShader();
+	update();
+}
 
-void GLWidget::drawMolecules()
+void GLWidget::InitializeFileWatcher()
+{
+	m_fileWatcher = new QFileSystemWatcher(this);
+	connect(m_fileWatcher, SIGNAL(fileChanged(const QString &)), this, SLOT(fileChanged(const QString &)));
+
+	// Watch all shader of the shader folder.
+	// Every time a shader changes it will be recompiled on the fly.
+	QDir shaderDir(QCoreApplication::applicationDirPath() + "/../../src/shader/");
+	auto files = shaderDir.entryInfoList();
+	qDebug() << "List of shaders:";
+	foreach(QFileInfo file, files)
+	{
+		if (file.isFile())
+		{
+			qDebug() << file.fileName();
+			m_fileWatcher->addPath(file.absoluteFilePath());
+		}
+	}
+}
+void GLWidget::InitializeGLSW()
+{
+	glswInit();
+	auto str = QCoreApplication::applicationDirPath() + "/../../src/shader/";
+	auto ba = str.toLatin1();
+	const char *shader_path = ba.data();
+	glswSetPath(shader_path, ".glsl");
+	glswAddDirectiveToken("", "#version 330");
+}
+void GLWidget::InitializeMoleculeShader() const
+{
+	// TODO
+}
+void GLWidget::DrawMolecules()
 {
 	// Clear back and depth buffers:
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -310,29 +268,12 @@ void GLWidget::drawMolecules()
 		}
 
 		m_mainWindow->setAnimationFrameGUI(m_currentFrame);
-		allocateGPUBuffer(m_currentFrame);
+		AllocateGPUBuffer(m_currentFrame);
 	}
 
-	if (isImposerRendering)
+	if (m_isImposerRendering)
 	{
-		// Bind program:
-		if (!m_moleculesProgram->bind())
-			ThrowEngineException(L"Failed to bind molecules program.");
-
-		{
-			// TODO Set uniforms:
-
-			// Bind buffer:
-			m_moleculesBuffer.Bind();
-
-			// Draw molecules:
-			glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(s_vertices.size()));
-
-			// Unbing buffer:
-			m_moleculesBuffer.Release();
-		}
-		// Unbind program:
-		m_moleculesProgram->release();
+		// TODO
 	}
 	else
 	{
@@ -342,14 +283,14 @@ void GLWidget::drawMolecules()
 		auto m_mrAtoms = (*m_animation)[m_currentFrame].size();
 
 
-		ambientFactor = 0.05f;
-		diffuseFactor = 0.5f;
-		specularFactor = 0.3f;
+		m_ambientFactor = 0.05f;
+		m_diffuseFactor = 0.5f;
+		m_specularFactor = 0.3f;
 
 
-		GLfloat light_ambient[] = { ambientFactor,ambientFactor,ambientFactor, 1.0f };
-		GLfloat light_diffuse[] = { diffuseFactor, diffuseFactor, diffuseFactor, 1.0f };
-		GLfloat light_specular[] = { specularFactor, specularFactor, specularFactor, 1.0f };
+		GLfloat light_ambient[] = { m_ambientFactor,m_ambientFactor,m_ambientFactor, 1.0f };
+		GLfloat light_diffuse[] = { m_diffuseFactor, m_diffuseFactor, m_diffuseFactor, 1.0f };
+		GLfloat light_specular[] = { m_specularFactor, m_specularFactor, m_specularFactor, 1.0f };
 
 		GLfloat light_position[] = { 0.0f, 0.0f, -100.0f, 1.0f };
 
@@ -381,15 +322,12 @@ void GLWidget::drawMolecules()
 
 
 		glLoadIdentity();
-		auto er = glGetError();
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glm::value_ptr(m_camera.getProjectionMatrix()));
 		glMatrixMode(GL_MODELVIEW);
 		glMultMatrixf(glm::value_ptr(m_camera.getViewMatrix()));
 
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-		er = glGetError();
 
 		for (size_t i = 0; i < m_mrAtoms; i++)
 		{
@@ -400,9 +338,7 @@ void GLWidget::drawMolecules()
 			//set color and position
 			glColor4f(atom.color.r, atom.color.g, atom.color.b, 1);
 			glTranslatef(atom.position.x, atom.position.y, atom.position.z);
-			er = glGetError();
 			gluSphere(quad, atom.radius, 40, 40);
-			er = glGetError();
 			glPopMatrix();
 			gluDeleteQuadric(quad);
 		}
@@ -411,8 +347,50 @@ void GLWidget::drawMolecules()
 
 
 }
+void GLWidget::AllocateGPUBuffer(int frameNumber)
+{
+	// Makes the widget's rendering context the current OpenGL rendering context
+	makeCurrent();
 
-void GLWidget::calculateFPS()
+	m_moleculesCount = (*m_animation)[frameNumber].size();
+
+	// Load atoms:
+	{
+		m_positions.clear();
+		m_radii.clear();
+		m_colors.clear();
+
+		for (size_t i = 0; i < m_moleculesCount; ++i)
+		{
+			auto atom = (*m_animation)[frameNumber][i];
+			m_positions.push_back(atom.position);
+			m_radii.push_back(atom.radius);
+			m_colors.push_back(atom.color);
+		}
+	}
+
+	// Allocating GPU memory for rendering:
+	// TODO
+
+	// Display used GPU memory:
+	{
+		/*
+		// Get total memory:
+		auto totalMemoryKB = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &totalMemoryKB);
+		auto totalMemoryMB = float(totalMemoryKB) / 1024.0f;
+
+		// Get current available memory:
+		auto currrentAvailableMemoryKB = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX, &currrentAvailableMemoryKB);
+		auto currentAvailableMemoryMB = float(currrentAvailableMemoryKB) / 1024.0f;
+
+		// Display used GPU memory:
+		m_mainWindow->displayUsedGPUMemory(totalMemoryMB - currentAvailableMemoryMB);
+		*/
+	}
+}
+void GLWidget::CalculateFPS()
 {
 	m_frameCount++;
 
@@ -436,11 +414,11 @@ void GLWidget::calculateFPS()
 	m_mainWindow->displayFPS(static_cast<int>(m_fps));
 }
 
-void GLWidget::setupDebugger()
+void GLWidget::SetupDebugger()
 {
-	QOpenGLContext *ctx = QOpenGLContext::currentContext();
-	if (!ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
-		ThrowEngineException(L"Debug logger is not supported.");
+	QOpenGLContext* ctx = QOpenGLContext::currentContext();
+	if (!ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) {}
+		//ThrowEngineException(L"Debug logger is not supported.");
 
 	m_logger = std::make_unique<QOpenGLDebugLogger>(this);;
 
@@ -452,97 +430,13 @@ void GLWidget::setupDebugger()
 		Qt::DirectConnection
 	);
 
-	if (!m_logger->initialize())
-		ThrowEngineException(L"Couldn't initialize logger.");
+	if (!m_logger->initialize()){}
+		//ThrowEngineException(L"Couldn't initialize logger.");
 
 	m_logger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
 	m_logger->enableMessages();
 }
-void GLWidget::onMessageLogged(QOpenGLDebugMessage message)
+void GLWidget::OnMessageLogged(QOpenGLDebugMessage message)
 {
 	qDebug() << message;
-}
-
-void GLWidget::resizeGL(int w, int h)
-{
-	m_camera.setAspect(float(w) / h);
-
-}
-
-void GLWidget::mousePressEvent(QMouseEvent *event)
-{
-	m_lastPos = event->pos();
-}
-
-void GLWidget::wheelEvent(QWheelEvent *event)
-{
-	m_camera.zoom(event->delta() / 30);
-	update();
-}
-
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
-{
-	int dx = event->x() - m_lastPos.x();
-	int dy = event->y() - m_lastPos.y();
-
-	if (event->buttons() & Qt::LeftButton) {
-		m_camera.rotateAzimuth(dx / 100.0f);
-		m_camera.rotatePolar(dy / 100.0f);
-	}
-
-	if (event->buttons() & Qt::RightButton) {
-		m_camera.rotateAzimuth(dx / 100.0f);
-		m_camera.rotatePolar(dy / 100.0f);
-	}
-	m_lastPos = event->pos();
-	update();
-}
-
-void GLWidget::keyPressEvent(QKeyEvent *event)
-{
-	switch (event->key())
-	{
-	case Qt::Key_Space:
-	{
-		break;
-	}
-	default:
-	{
-		event->ignore();
-		break;
-	}
-	}
-}
-
-void GLWidget::keyReleaseEvent(QKeyEvent *event)
-{
-
-}
-
-void GLWidget::fileChanged(const QString &path)
-{
-	// reboot glsw, otherwise it will use the old cached shader
-	glswShutdown();
-	initglsw();
-
-	loadMoleculeShader();
-	update();
-}
-
-void GLWidget::playAnimation()
-{
-	m_AnimationTimer.start();
-	m_lastTime = 0;
-	m_isPlaying = true;
-}
-
-void GLWidget::pauseAnimation()
-{
-	m_isPlaying = false;
-}
-
-void GLWidget::setAnimationFrame(int frameNr)
-{
-	m_currentFrame = frameNr;
-	allocateGPUBuffer(frameNr);
 }
