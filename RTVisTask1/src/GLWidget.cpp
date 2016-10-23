@@ -53,7 +53,7 @@ void GLWidget::MoleculeRenderMode(std::vector<std::vector<Atom>>* animation)
 
 void GLWidget::PlayAnimation()
 {
-	m_AnimationTimer.start();
+	m_animationTimer.start();
 	m_lastTime = 0;
 	m_isPlaying = true;
 }
@@ -148,45 +148,46 @@ void GLWidget::initializeGL()
 
 	QWidget::setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
-	initializeOpenGLFunctions();
-	glClearColor(0.862f, 0.929f, 0.949f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	// Initialize graphics component:
+	m_graphics.Initialize();
 
-	// Initialize shaders:
-	m_moleculesProgram = new QOpenGLShaderProgram();
-	m_vertexShader = new QOpenGLShader(QOpenGLShader::Vertex);
-	m_geometryShader = new QOpenGLShader(QOpenGLShader::Geometry);
-	m_fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment);
-
-	/*auto total_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
+	// Display GPU memory data:
+	{
+		/*auto total_mem_kb = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
 		&total_mem_kb);
 
-	auto cur_avail_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
+		auto cur_avail_mem_kb = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
 		&cur_avail_mem_kb);
 
-	auto total_mem_mb = float(total_mem_kb) / 1024.0f;
+		auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
-	m_mainWindow->displayTotalGPUMemory(total_mem_mb);
-	m_mainWindow->displayUsedGPUMemory(0);*/
+		m_mainWindow->displayTotalGPUMemory(total_mem_mb);
+		m_mainWindow->displayUsedGPUMemory(0);*/
+	}
 
-	connect(&m_paintTimer, SIGNAL(timeout()), this, SLOT(update()));
-	m_paintTimer.start(16); // about 60FPS
-	m_fpsTimer.start();
+	// Setup timers:
+	{
+		connect(&m_paintTimer, SIGNAL(timeout()), this, SLOT(update()));
+		m_paintTimer.start(16);
+		m_fpsTimer.start();
+	}
 }
 void GLWidget::resizeGL(int width, int height)
 {
+	m_graphics.OnResize(width, height);
+
 	m_camera.setAspect(static_cast<float>(width) / height);
 }
 void GLWidget::paintGL()
 {
 	CalculateFPS();
+
 	switch (m_renderMode)
 	{
 	case(RenderMode::NONE):
-		break; // do nothing
+		break;
 
 	case(RenderMode::PDB):
 		// TODO:
@@ -198,17 +199,17 @@ void GLWidget::paintGL()
 
 	default:
 		break;
-
 	}
 }
 void GLWidget::fileChanged(const QString &path)
 {
-	// reboot glsw, otherwise it will use the old cached shader
+	// Reboot glsw, otherwise it will use the old cached shader:
 	glswShutdown();
 	InitializeGLSW();
 
 	InitializeMoleculeShader();
-	update();
+	
+	QWidget::update();
 }
 
 void GLWidget::InitializeFileWatcher()
@@ -245,19 +246,16 @@ void GLWidget::InitializeMoleculeShader() const
 }
 void GLWidget::DrawMolecules()
 {
-	// Clear back and depth buffers:
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Animate frames:
 	if (m_isPlaying)
 	{
-		auto elapsed = m_AnimationTimer.elapsed() - m_lastTime;
+		auto elapsed = m_animationTimer.elapsed() - m_lastTime;
 
 		elapsed -= msPerFrame;
 		while (elapsed > 0)
 		{
 			m_currentFrame++;
-			m_lastTime = m_AnimationTimer.elapsed();
+			m_lastTime = m_animationTimer.elapsed();
 			elapsed -= msPerFrame;
 
 		}
@@ -273,15 +271,16 @@ void GLWidget::DrawMolecules()
 
 	if (m_isImposerRendering)
 	{
-		// TODO
+		m_graphics.Update();
+		m_graphics.Render();
 	}
 	else
 	{
+		// Clear back and depth buffers:
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//simplistic implementation. 
-
 		auto m_mrAtoms = (*m_animation)[m_currentFrame].size();
-
 
 		m_ambientFactor = 0.05f;
 		m_diffuseFactor = 0.5f;
@@ -343,9 +342,6 @@ void GLWidget::DrawMolecules()
 			gluDeleteQuadric(quad);
 		}
 	}
-
-
-
 }
 void GLWidget::AllocateGPUBuffer(int frameNumber)
 {

@@ -10,5 +10,7 @@ namespace OpenGLEngine
 		OpenGL() = default;
 
 		void Initialize();
+
+		void BeginRender();
 	};
 }

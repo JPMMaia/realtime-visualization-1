@@ -4,8 +4,10 @@
 #include "DefaultScene.h"
 #include "RenderItem.h"
 
-#include <QtGui/QOpenGLShaderProgram>
+#include <array> 
 #include <memory>
+
+#include <QtGui/QOpenGLShaderProgram>
 
 namespace OpenGLEngine
 {

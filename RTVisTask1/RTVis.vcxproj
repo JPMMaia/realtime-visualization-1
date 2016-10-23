@@ -149,6 +149,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders.qrc" />
+    <None Include="res\textures.qrc" />
     <None Include="src\shader\Molecules.glsl" />
   </ItemGroup>
   <ItemGroup>

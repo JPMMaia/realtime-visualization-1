@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "PdbLoader.h"
 #include "BufferTypes.h"
+#include "OpenGLEngine/Graphics.h"
 
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions>
@@ -116,7 +117,7 @@ private:
 	bool m_isPlaying;
 	qint64 m_lastTime;
 
-	QElapsedTimer m_AnimationTimer;
+	QElapsedTimer m_animationTimer;
 
 	// vars to measure fps
 	size_t m_frameCount;
@@ -137,6 +138,8 @@ private:
 	float m_diffuseFactor = 0.5f;
 	float m_specularFactor = 0.3f;
 	bool m_isImposerRendering = true;
+
+	OpenGLEngine::Graphics m_graphics;
 
 	std::unique_ptr<QOpenGLDebugLogger> m_logger;
 };
