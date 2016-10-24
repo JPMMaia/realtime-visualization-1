@@ -73,6 +73,9 @@
     <ClCompile Include="src\MoleculesScene.cpp">
       <Filter>Content</Filter>
     </ClCompile>
+    <ClCompile Include="src\MoleculesRenderItem.cpp">
+      <Filter>Content\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\MainWindow.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="src\MoleculesScene.h">
       <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MoleculesRenderItem.h">
+      <Filter>Content\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include "ICamera.h"
 
 #include <QtGui/QOpenGLShaderProgram>
+#include <unordered_map>
 
 namespace OpenGLEngine
 {
@@ -28,7 +29,7 @@ namespace OpenGLEngine
 
 	private:
 		void InitializeShaders();
-		void DrawRenderItems();
+		void DrawRenderItems(QOpenGLShaderProgram* program);
 
 	private:
 		OpenGL m_openGL;
@@ -36,6 +37,8 @@ namespace OpenGLEngine
 		std::vector<std::unique_ptr<IRenderItem>> m_allRenderItems;
 		ICamera* m_camera = nullptr;
 
-		QOpenGLShaderProgram m_program;
+		std::unordered_map<std::string, std::unique_ptr<QOpenGLShaderProgram>> m_programs;
+
+		//QOpenGLShaderProgram m_program;
 	};
 }

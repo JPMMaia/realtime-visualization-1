@@ -30,8 +30,10 @@ void Graphics::Render()
 	// Clear color and depth buffers:
 	m_openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	auto textureShaderProgram = m_programs.at("TextureShaderProgram").get();
+
 	// Bind shader pipeline for use:
-	if (!m_program.bind())
+	if (!textureShaderProgram->bind())
 		ThrowEngineException(L"Program failed to bind.");
 
 	// Set model-view-projection matrix:
@@ -43,13 +45,13 @@ void Graphics::Render()
 		const auto& viewMatrix = m_camera->GetViewMatrix();
 		const auto& projectionMatrix = m_camera->GetProjectionMatrix();
 
-		m_program.setUniformValue("mvp_matrix", projectionMatrix * viewMatrix * matrix);
+		textureShaderProgram->setUniformValue("mvp_matrix", projectionMatrix * viewMatrix * matrix);
 	}
 
-	DrawRenderItems();
+	DrawRenderItems(textureShaderProgram);
 
 	// Unbind shader pipeline:
-	m_program.release();
+	textureShaderProgram->release();
 }
 
 void Graphics::AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem)
@@ -64,23 +66,30 @@ OpenGL& Graphics::GetOpenGL()
 
 void Graphics::InitializeShaders()
 {
-	// Compile vertex shader
-	if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
-		ThrowEngineException(L"Vertex shader failed to compile.");
-
-	// Compile fragment shader
-	if (!m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-		ThrowEngineException(L"Fragment shader failed to compile.");
-
-	// Link shader pipeline
-	if (!m_program.link())
-		ThrowEngineException(L"Program failed to link.");
-}
-
-void Graphics::DrawRenderItems()
-{
-	for(const auto& renderItem : m_allRenderItems)
 	{
-		renderItem->Render(&m_openGL, &m_program);
+		auto program = std::make_unique<QOpenGLShaderProgram>();
+
+		// Compile vertex shader
+		if (!program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+			ThrowEngineException(L"Vertex shader failed to compile.");
+
+		// Compile fragment shader
+		if (!program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+			ThrowEngineException(L"Fragment shader failed to compile.");
+
+		// Link shader pipeline
+		if (!program->link())
+			ThrowEngineException(L"Program failed to link.");
+
+		m_programs.emplace("TextureShaderProgram", std::move(program));
 	}
 }
+
+void Graphics::DrawRenderItems(QOpenGLShaderProgram* program)
+{
+	for (const auto& renderItem : m_allRenderItems)
+	{
+		renderItem->Render(&m_openGL, program);
+	}
+}
+
