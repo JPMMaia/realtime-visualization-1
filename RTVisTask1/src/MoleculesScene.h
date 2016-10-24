@@ -17,6 +17,5 @@ namespace RTVis
 
 	private:
 		std::unordered_map<std::string, OpenGLEngine::MeshGeometry> m_meshes;
-		std::unordered_map<std::string, std::unique_ptr<QOpenGLTexture>> m_textures;
 	};
 }

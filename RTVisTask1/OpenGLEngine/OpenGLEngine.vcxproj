@@ -181,6 +181,7 @@
     <ClInclude Include="OpenGLEngine\MeshGeometry.h" />
     <ClInclude Include="OpenGLEngine\OpenGL.h" />
     <ClInclude Include="OpenGLEngine\DefaultRenderItem.h" />
+    <ClInclude Include="OpenGLEngine\RenderLayer.h" />
     <ClInclude Include="OpenGLEngine\Utilities.h" />
     <ClInclude Include="OpenGLEngine\VertexTypes.h" />
     <CustomBuild Include="OpenGLEngine\MainWidget.h">

@@ -1,5 +1,7 @@
 ﻿#include "MoleculesRenderItem.h"
 
+#include <QOpenGLShaderProgram>
+
 using namespace RTVis;
 using namespace OpenGLEngine;
 
@@ -9,21 +11,27 @@ void MoleculesRenderItem::Render(OpenGLEngine::OpenGL* openGL, QOpenGLShaderProg
 	this->Mesh->BindBuffers();
 
 	// Offset for position:
+	auto stride = static_cast<int>(sizeof(VertexTypes::PositionColorRadiusVertexType));
 	quintptr offset = 0;
 
-	/*// Tell OpenGL pipeline how to locate vertex position data:
-	auto vertexLocation = program->attributeLocation("a_position");
+	// Tell OpenGL pipeline how to locate vertex position data:
+	auto vertexLocation = program->attributeLocation("vs_in_positionW");
 	program->enableAttributeArray(vertexLocation);
-	program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexTypes::DefaultVertexType));
-
-	// Offset for texture coordinate:
+	program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, stride);	
 	offset += sizeof(QVector3D);
 
-	// Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-	auto textureCoordinatesLocation = program->attributeLocation("a_texcoord");
-	program->enableAttributeArray(textureCoordinatesLocation);
-	program->setAttributeBuffer(textureCoordinatesLocation, GL_FLOAT, offset, 2, sizeof(VertexTypes::DefaultVertexType));*/
+	// Tell OpenGL programmable pipeline how to locate vertex color data:
+	auto colorLocation = program->attributeLocation("vs_in_color");
+	program->enableAttributeArray(colorLocation);
+	program->setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, stride);
+	offset += sizeof(QVector3D);
 
-	// Draw cube geometry using indices from VBO 1:
+	// Tell OpenGL programmable pipeline how to locate vertex radius data:
+	auto radiusLocation = program->attributeLocation("vs_in_radius");
+	program->enableAttributeArray(radiusLocation);
+	program->setAttributeBuffer(radiusLocation, GL_FLOAT, offset, 1, stride);
+
+	// Draw geometry:
+	//openGL->glDrawArrays(this->PrimitiveType, 0, static_cast<GLsizei>(this->Mesh->GetIndexCount()));
 	openGL->glDrawElements(this->PrimitiveType, static_cast<GLsizei>(this->Mesh->GetIndexCount()), GL_UNSIGNED_INT, nullptr);
 }

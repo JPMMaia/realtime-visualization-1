@@ -39,6 +39,6 @@ void DefaultScene::InitializeRenderItems(Graphics* graphics)
 		cubeRenderItem->Texture = m_textures.at("CubeTexture").get();
 		cubeRenderItem->PrimitiveType = GL_TRIANGLE_STRIP;
 
-		graphics->AddRenderItem(std::move(cubeRenderItem));
+		graphics->AddRenderItem(std::move(cubeRenderItem), { RenderLayer::Texture });
 	}
 }

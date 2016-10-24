@@ -29,6 +29,10 @@ void MoleculesScene::InitializeGeometry(const std::vector<Atom>& atoms)
 			atomsMesh.Vertices.push_back(vertex);
 		}
 
+		atomsMesh.Indices.reserve(atoms.size());
+		for (size_t i = 0; i < atoms.size(); ++i)
+			atomsMesh.Indices.push_back(static_cast<uint32_t>(i));
+
 		m_meshes.emplace("Atoms Mesh", std::move(atomsMesh));
 	}
 }
@@ -39,8 +43,8 @@ void MoleculesScene::InitializeRenderItems(Graphics* graphics)
 	{
 		auto moleculesRenderItem = std::make_unique<MoleculesRenderItem>();
 		moleculesRenderItem->Mesh = &m_meshes.at("Atoms Mesh");
-		moleculesRenderItem->PrimitiveType = GL_POINTS;
+		moleculesRenderItem->PrimitiveType = GL_TRIANGLES;
 
-		graphics->AddRenderItem(std::move(moleculesRenderItem));
+		graphics->AddRenderItem(std::move(moleculesRenderItem), { RenderLayer::Molecules });
 	}
 }

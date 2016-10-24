@@ -160,6 +160,9 @@
     <ClInclude Include="OpenGLEngine\IRenderItem.h">
       <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLEngine\RenderLayer.h">
+      <Filter>OpenGLEngine\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\vshader.glsl">
