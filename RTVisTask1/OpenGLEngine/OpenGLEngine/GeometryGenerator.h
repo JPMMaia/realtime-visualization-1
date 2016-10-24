@@ -10,13 +10,15 @@ namespace OpenGLEngine
 	{
 	public:
 
+		template<typename VertexType = VertexTypes::DefaultVertexType>
 		struct MeshData
 		{
-			std::vector<VertexTypes::DefaultVertexType> Vertices;
+			std::vector<VertexType> Vertices;
 			std::vector<uint32_t> Indices;
 		};
 
 	public:
-		static MeshData CreateCube();
+
+		static MeshData<VertexTypes::DefaultVertexType> CreateCube();
 	};
 }

@@ -1,5 +1,6 @@
 #include "DefaultScene.h"
 #include "Graphics.h"
+#include "DefaultRenderItem.h"
 
 using namespace OpenGLEngine;
 
@@ -32,5 +33,12 @@ void DefaultScene::InitializeTextures()
 void DefaultScene::InitializeRenderItems(Graphics* graphics)
 {
 	// Cube render item:
-	graphics->AddRenderItem(RenderItem(&m_meshes.at("Cube"), m_textures.at("CubeTexture").get()));
+	{
+		auto cubeRenderItem = std::make_unique<DefaultRenderItem>();
+		cubeRenderItem->Mesh = &m_meshes.at("Cube");
+		cubeRenderItem->Texture = m_textures.at("CubeTexture").get();
+		cubeRenderItem->PrimitiveType = GL_TRIANGLE_STRIP;
+
+		graphics->AddRenderItem(std::move(cubeRenderItem));
+	}
 }

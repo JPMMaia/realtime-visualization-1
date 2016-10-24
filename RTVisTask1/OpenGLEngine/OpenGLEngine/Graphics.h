@@ -2,10 +2,8 @@
 
 #include "OpenGL.h"
 #include "DefaultScene.h"
-#include "RenderItem.h"
+#include "IRenderItem.h"
 #include "ICamera.h"
-
-#include <memory>
 
 #include <QtGui/QOpenGLShaderProgram>
 
@@ -24,7 +22,7 @@ namespace OpenGLEngine
 		void Update();
 		void Render();
 
-		void AddRenderItem(RenderItem&& renderItem);
+		void AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem);
 
 		OpenGL& GetOpenGL();
 
@@ -35,15 +33,9 @@ namespace OpenGLEngine
 	private:
 		OpenGL m_openGL;
 
-		std::unique_ptr<DefaultScene> m_scene;
-		std::vector<RenderItem> m_allRenderItems;
-		ICamera* m_camera;
+		std::vector<std::unique_ptr<IRenderItem>> m_allRenderItems;
+		ICamera* m_camera = nullptr;
 
 		QOpenGLShaderProgram m_program;
-		QMatrix4x4 m_projectionMatrix;
-
-		QVector3D m_rotationAxis;
-		qreal m_angularSpeed;
-		QQuaternion m_rotation;
 	};
 }

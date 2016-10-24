@@ -152,6 +152,7 @@ void GLWidget::initializeGL()
 
 	// Initialize graphics component:
 	m_graphics.Initialize();
+	m_defaultScene.Initialize(&m_graphics);
 
 	// Display GPU memory data:
 	{
@@ -244,7 +245,7 @@ void GLWidget::InitializeGLSW()
 }
 void GLWidget::InitializeMoleculeShader() const
 {
-	// TODO
+	// TODO initialize molecule shader
 }
 void GLWidget::DrawMolecules()
 {
@@ -367,8 +368,10 @@ void GLWidget::AllocateGPUBuffer(int frameNumber)
 		}
 	}
 
+	m_moleculesScene.Initialize(&m_graphics, (*m_animation)[frameNumber]);
+
 	// Allocating GPU memory for rendering:
-	// TODO
+	// TODO allocate data (positions, radii, colors)
 
 	// Display used GPU memory:
 	{

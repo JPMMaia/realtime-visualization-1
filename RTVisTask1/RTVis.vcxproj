@@ -106,6 +106,7 @@
     <ClCompile Include="src\GLWidget.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
+    <ClCompile Include="src\MoleculesScene.cpp" />
     <ClCompile Include="src\NetCDFLoader.cpp" />
     <ClCompile Include="src\PdbLoader.cpp" />
     <ClCompile Include="src\streamserver.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Commons.h" />
     <ClInclude Include="src\glsw.h" />
+    <ClInclude Include="src\MoleculesScene.h" />
     <ClInclude Include="src\NetCDFLoader.h" />
     <ClInclude Include="src\PdbLoader.h" />
   </ItemGroup>

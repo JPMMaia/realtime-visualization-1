@@ -96,9 +96,6 @@
     <ClCompile Include="OpenGLEngine\OpenGL.cpp">
       <Filter>OpenGLEngine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLEngine\RenderItem.cpp">
-      <Filter>OpenGLEngine\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGLEngine\MeshGeometry.cpp">
       <Filter>OpenGLEngine\Models</Filter>
     </ClCompile>
@@ -107,6 +104,9 @@
     </ClCompile>
     <ClCompile Include="OpenGLEngine\MainWidget.cpp">
       <Filter>OpenGLEngine\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLEngine\DefaultRenderItem.cpp">
+      <Filter>OpenGLEngine\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,9 +142,6 @@
     <ClInclude Include="OpenGLEngine\OpenGL.h">
       <Filter>OpenGLEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLEngine\RenderItem.h">
-      <Filter>OpenGLEngine\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGLEngine\VertexTypes.h">
       <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
@@ -156,6 +153,12 @@
     </ClInclude>
     <ClInclude Include="OpenGLEngine\ICamera.h">
       <Filter>OpenGLEngine\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\DefaultRenderItem.h">
+      <Filter>OpenGLEngine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\IRenderItem.h">
+      <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

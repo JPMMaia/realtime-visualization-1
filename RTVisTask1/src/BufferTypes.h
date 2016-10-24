@@ -15,41 +15,16 @@ namespace RTV
 		struct VertexType
 		{
 			VertexType() = default;
-			VertexType(const QVector3D& positionW, const QVector3D& color) : 
+			VertexType(const QVector3D& positionW, const QVector3D& color, float radius) : 
 				PositionW(positionW),
-				Color(color)
+				Color(color),
+				Radius(radius)
 			{
 			}
 
 			QVector3D PositionW;
 			QVector3D Color;
-
-			static constexpr int PositionWTupleSize = 3;
-			static constexpr int ColorTupleSize = 3;
-
-			static constexpr int PositionWOffset()
-			{
-				return offsetof(VertexType, VertexType::PositionW);
-			}
-			static constexpr int ColorOffset()
-			{
-				return offsetof(VertexType, VertexType::Color);
-			}
-			static constexpr int Stride()
-			{
-				return sizeof(VertexType);
-			}
-		};
-
-		struct MoleculesProgramUniformLocations
-		{
-			GLint ViewProjectionMatrix;
-		};
-
-		struct MoleculesProgramAttributeLocations
-		{
-			GLint PositionW;
-			GLint Color;
+			float Radius;
 		};
 	}
 }

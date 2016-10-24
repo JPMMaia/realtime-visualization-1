@@ -1,21 +1,15 @@
-#include "RenderItem.h"
+#include "DefaultRenderItem.h"
 
 using namespace OpenGLEngine;
 
-RenderItem::RenderItem(MeshGeometry* mesh, QOpenGLTexture* texture) :
-	m_mesh(mesh),
-	m_texture(texture)
+void DefaultRenderItem::Render(OpenGL* openGL, QOpenGLShaderProgram* program) const
 {
-}
-
-void RenderItem::Render(OpenGL* openGL, QOpenGLShaderProgram* program) const
-{
-	// Use texture unit 0 which contains cube.png:
-	m_texture->bind();
+	// Bind texture:
+	this->Texture->bind();
 	program->setUniformValue("texture", 0);
 
 	// Bind mesh buffers:
-	m_mesh->BindBuffers();
+	this->Mesh->BindBuffers();
 
 	// Offset for position:
 	quintptr offset = 0;
@@ -34,5 +28,5 @@ void RenderItem::Render(OpenGL* openGL, QOpenGLShaderProgram* program) const
 	program->setAttributeBuffer(textureCoordinatesLocation, GL_FLOAT, offset, 2, sizeof(VertexTypes::DefaultVertexType));
 
 	// Draw cube geometry using indices from VBO 1:
-	openGL->glDrawElements(GL_TRIANGLE_STRIP, 34, GL_UNSIGNED_SHORT, nullptr);
+	openGL->glDrawElements(this->PrimitiveType, static_cast<GLsizei>(this->Mesh->GetIndexCount()), GL_UNSIGNED_INT, nullptr);
 }

@@ -16,43 +16,14 @@ void Graphics::Initialize()
 {
 	m_openGL.Initialize();
 	InitializeShaders();
-	
-	m_scene = std::make_unique<DefaultScene>();
-	m_scene->Initialize(this);
 }
 
 void Graphics::OnResize(int width, int height)
 {
-	// Calculate aspect ratio:
-	auto aspectRatio = qreal(width) / qreal(height ? height : 1);
-
-	// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees:
-	const auto zNear = 3.0;
-	const auto zFar = 7.0;
-	const auto fov = 45.0;
-
-	// Reset projection:
-	m_projectionMatrix.setToIdentity();
-
-	// Set perspective projection:
-	m_projectionMatrix.perspective(fov, aspectRatio, zNear, zFar);
 }
 
 void Graphics::Update()
 {
-	/*// Decrease angular speed (friction)
-	m_angularSpeed *= 0.99;
-
-	// Stop rotation when speed goes below threshold
-	if (m_angularSpeed < 0.01)
-	{
-		m_angularSpeed = 0.0;
-	}
-	else
-	{
-		// Update rotation
-		m_rotation = QQuaternion::fromAxisAndAngle(m_rotationAxis, m_angularSpeed) * m_rotation;
-	}*/
 }
 void Graphics::Render()
 {
@@ -68,7 +39,6 @@ void Graphics::Render()
 		// Calculate model view transformation:
 		QMatrix4x4 matrix;
 		matrix.translate(0.0, 0.0, -5.0);
-		matrix.rotate(m_rotation);
 
 		const auto& viewMatrix = m_camera->GetViewMatrix();
 		const auto& projectionMatrix = m_camera->GetProjectionMatrix();
@@ -82,7 +52,7 @@ void Graphics::Render()
 	m_program.release();
 }
 
-void Graphics::AddRenderItem(RenderItem&& renderItem)
+void Graphics::AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem)
 {
 	m_allRenderItems.push_back(std::move(renderItem));
 }
@@ -111,6 +81,6 @@ void Graphics::DrawRenderItems()
 {
 	for(const auto& renderItem : m_allRenderItems)
 	{
-		renderItem.Render(&m_openGL, &m_program);
+		renderItem->Render(&m_openGL, &m_program);
 	}
 }

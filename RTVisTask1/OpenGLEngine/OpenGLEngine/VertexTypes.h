@@ -13,6 +13,13 @@ namespace OpenGLEngine
 			QVector2D TextureCoordinates;
 		};
 
+		struct PositionColorRadiusVertexType
+		{
+			QVector3D Position;
+			QVector3D Color;
+			float Radius;
+		};
+
 		using DefaultVertexType = PositionTextureVertexType;
 	}
 }

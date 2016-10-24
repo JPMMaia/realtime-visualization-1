@@ -2,9 +2,10 @@
 
 using namespace OpenGLEngine;
 
-GeometryGenerator::MeshData GeometryGenerator::CreateCube()
+
+GeometryGenerator::MeshData<VertexTypes::DefaultVertexType> GeometryGenerator::CreateCube()
 {
-	MeshData meshData;
+	MeshData<VertexTypes::DefaultVertexType> meshData;
 
 	meshData.Vertices =
 	{
