@@ -39,7 +39,7 @@ void Graphics::Render()
 		if (!textureShaderProgram->bind())
 			ThrowEngineException(L"Program failed to bind.");
 
-		// Set model-view-projection matrix:
+		// Set uniforms:
 		{
 			// Calculate model view transformation:
 			QMatrix4x4 matrix;
@@ -65,12 +65,13 @@ void Graphics::Render()
 		if (!moleculesShaderProgram->bind())
 			ThrowEngineException(L"Program failed to bind.");
 
-		// Set view-projection matrix:
+		// Set uniforms:
 		{
 			const auto& viewMatrix = m_camera->GetViewMatrix();
 			const auto& projectionMatrix = m_camera->GetProjectionMatrix();
 
 			moleculesShaderProgram->setUniformValue("u_viewProjectionMatrix", projectionMatrix * viewMatrix);
+			moleculesShaderProgram->setUniformValue("u_eyePositionW", m_camera->GetPosition());
 		}
 
 		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Molecules)], moleculesShaderProgram);
@@ -117,16 +118,23 @@ void Graphics::InitializeShaders()
 	{
 		auto vertexShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Vertex);
 		{
-			auto vertexShaderSourceCode = glswGetShader("Molecules.Vertex");
-			if (!vertexShader->compileSourceCode(vertexShaderSourceCode))
-				ThrowEngineException(L"Vertex shader failed to compile.");
+			auto shaderSourceCode = glswGetShader("Molecules.Vertex");
+			if (!vertexShader->compileSourceCode(shaderSourceCode))
+				ThrowEngineException(L"Vertex shader failed to compile: " + vertexShader->log().toStdWString());
+		}
+
+		auto geometryShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Geometry);
+		{
+			auto shaderSourceCode = glswGetShader("Molecules.Geometry");
+			if (!geometryShader->compileSourceCode(shaderSourceCode))
+				ThrowEngineException(L"Geometry shader failed to compile: " + geometryShader->log().toStdWString());
 		}
 
 		auto fragmentShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Fragment);
 		{
-			auto fragmentShaderSourceCode = glswGetShader("Molecules.Fragment");
-			if (!fragmentShader->compileSourceCode(fragmentShaderSourceCode))
-				ThrowEngineException(L"Fragment shader failed to compile.");
+			auto shaderSourceCode = glswGetShader("Molecules.Fragment");
+			if (!fragmentShader->compileSourceCode(shaderSourceCode))
+				ThrowEngineException(L"Fragment shader failed to compile: " + fragmentShader->log().toStdWString());
 		}
 
 		{
@@ -134,6 +142,9 @@ void Graphics::InitializeShaders()
 
 			if (!program->addShader(vertexShader.get()))
 				ThrowEngineException(L"Failed to add vertex shader to molecules shader program.");
+
+			if (!program->addShader(geometryShader.get()))
+				ThrowEngineException(L"Failed to add geometry shader to molecules shader program.");
 
 			if (!program->addShader(fragmentShader.get()))
 				ThrowEngineException(L"Failed to add fragment shader to molecules shader program.");

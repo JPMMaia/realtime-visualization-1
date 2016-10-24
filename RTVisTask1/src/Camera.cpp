@@ -52,6 +52,10 @@ void Camera::setOrthogonalBorders(float left, float right, float top, float bott
 	mBottom = bottom;
 }
 
+const QVector3D& Camera::GetPosition() const
+{
+	return m_qPosition;
+}
 const QMatrix4x4& Camera::GetViewMatrix() const
 {
 	return m_qViewMatrix;
@@ -70,6 +74,7 @@ void Camera::buildViewMatrix(void)
 	mViewMatrix = glm::lookAt(pos, mTarget, mUp);
 	//mViewMatrix = glm::lookAt(mPos,mTarget,mUp);
 	m_qViewMatrix = QMatrix4x4(glm::value_ptr(mViewMatrix)).transposed();
+	m_qPosition = QVector3D(pos.x, pos.y, pos.z);
 }
 
 void Camera::buildProjectionMatrix(void)

@@ -43,7 +43,7 @@ void MoleculesScene::InitializeRenderItems(Graphics* graphics)
 	{
 		auto moleculesRenderItem = std::make_unique<MoleculesRenderItem>();
 		moleculesRenderItem->Mesh = &m_meshes.at("Atoms Mesh");
-		moleculesRenderItem->PrimitiveType = GL_TRIANGLES;
+		moleculesRenderItem->PrimitiveType = GL_POINTS;
 
 		graphics->AddRenderItem(std::move(moleculesRenderItem), { RenderLayer::Molecules });
 	}
