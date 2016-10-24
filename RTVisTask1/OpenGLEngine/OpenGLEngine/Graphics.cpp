@@ -1,6 +1,8 @@
 #include "Graphics.h"
 #include "EngineException.h"
 #include "DefaultScene.h"
+#include <glm/gtc/matrix_transform.inl>
+#include <glm/gtc/type_ptr.inl>
 
 using namespace OpenGLEngine;
 
@@ -68,12 +70,10 @@ void Graphics::Render()
 		matrix.translate(0.0, 0.0, -5.0);
 		matrix.rotate(m_rotation);
 
-		auto viewMatrix = QMatrix4x4();
-		viewMatrix.setToIdentity();
-		//auto viewMatrix = m_camera->GetViewMatrix();
-		auto projectionMatrix = m_camera->GetProjectionMatrix();
+		const auto& viewMatrix = m_camera->GetViewMatrix();
+		const auto& projectionMatrix = m_camera->GetProjectionMatrix();
 
-		m_program.setUniformValue("mvp_matrix", m_projectionMatrix * viewMatrix * matrix);
+		m_program.setUniformValue("mvp_matrix", projectionMatrix * viewMatrix * matrix);
 	}
 
 	DrawRenderItems();

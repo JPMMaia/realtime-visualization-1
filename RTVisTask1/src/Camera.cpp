@@ -69,7 +69,7 @@ void Camera::buildViewMatrix(void)
 	pos.y = mRadius * cosf(mPolar);
 	mViewMatrix = glm::lookAt(pos, mTarget, mUp);
 	//mViewMatrix = glm::lookAt(mPos,mTarget,mUp);
-	m_qViewMatrix = QMatrix4x4(glm::value_ptr(mViewMatrix));
+	m_qViewMatrix = QMatrix4x4(glm::value_ptr(mViewMatrix)).transposed();
 }
 
 void Camera::buildProjectionMatrix(void)
@@ -80,7 +80,7 @@ void Camera::buildProjectionMatrix(void)
 	else {
 		mProjectionMatrix = glm::perspective(mFieldOfView, mAspect, mNear, mFar);
 	}
-	m_qProjectionMatrix = QMatrix4x4(glm::value_ptr(mProjectionMatrix));
+	m_qProjectionMatrix = QMatrix4x4(glm::value_ptr(mProjectionMatrix)).transposed();
 }
 
 void Camera::zoom(float t)
