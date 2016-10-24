@@ -5,6 +5,11 @@
 using namespace OpenGLEngine;
 
 
+Graphics::Graphics(ICamera* camera) :
+	m_camera(camera)
+{
+}
+
 void Graphics::Initialize()
 {
 	m_openGL.Initialize();
@@ -52,6 +57,10 @@ void Graphics::Render()
 	// Clear color and depth buffers:
 	m_openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Bind shader pipeline for use:
+	if (!m_program.bind())
+		ThrowEngineException(L"Program failed to bind.");
+
 	// Set model-view-projection matrix:
 	{
 		// Calculate model view transformation:
@@ -59,10 +68,18 @@ void Graphics::Render()
 		matrix.translate(0.0, 0.0, -5.0);
 		matrix.rotate(m_rotation);
 
-		m_program.setUniformValue("mvp_matrix", m_projectionMatrix * matrix);
+		auto viewMatrix = QMatrix4x4();
+		viewMatrix.setToIdentity();
+		//auto viewMatrix = m_camera->GetViewMatrix();
+		auto projectionMatrix = m_camera->GetProjectionMatrix();
+
+		m_program.setUniformValue("mvp_matrix", m_projectionMatrix * viewMatrix * matrix);
 	}
 
 	DrawRenderItems();
+
+	// Unbind shader pipeline:
+	m_program.release();
 }
 
 void Graphics::AddRenderItem(RenderItem&& renderItem)
@@ -88,10 +105,6 @@ void Graphics::InitializeShaders()
 	// Link shader pipeline
 	if (!m_program.link())
 		ThrowEngineException(L"Program failed to link.");
-
-	// Bind shader pipeline for use
-	if (!m_program.bind())
-		ThrowEngineException(L"Program failed to bind.");
 }
 
 void Graphics::DrawRenderItems()

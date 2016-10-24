@@ -27,7 +27,8 @@ const float msPerFrame = 50.0f;
 
 GLWidget::GLWidget(QWidget* parent, MainWindow* mainWindow) :
 	QOpenGLWidget(parent),
-	m_mainWindow(mainWindow)
+	m_mainWindow(mainWindow),
+	m_graphics(&m_camera)
 {
 	InitializeFileWatcher();
 	InitializeGLSW();

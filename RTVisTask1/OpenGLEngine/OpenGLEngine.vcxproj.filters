@@ -58,6 +58,9 @@
     <Filter Include="OpenGLEngine\Widgets">
       <UniqueIdentifier>{5bff7f1c-3d6f-4686-820d-b3f99558a35e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OpenGLEngine\Cameras">
+      <UniqueIdentifier>{ef194e67-57e0-4093-b228-48150cd9b4c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGLEngine\main.cpp">
@@ -150,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="OpenGLEngine\GeometryGenerator.h">
       <Filter>OpenGLEngine\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\ICamera.h">
+      <Filter>OpenGLEngine\Cameras</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

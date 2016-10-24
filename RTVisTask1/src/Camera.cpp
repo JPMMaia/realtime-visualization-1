@@ -10,6 +10,7 @@
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp> 
+#include <gtc/type_ptr.hpp>
 
 
 Camera::Camera()
@@ -51,6 +52,15 @@ void Camera::setOrthogonalBorders(float left, float right, float top, float bott
 	mBottom = bottom;
 }
 
+const QMatrix4x4& Camera::GetViewMatrix() const
+{
+	return m_qViewMatrix;
+}
+const QMatrix4x4& Camera::GetProjectionMatrix() const
+{
+	return m_qProjectionMatrix;
+}
+
 void Camera::buildViewMatrix(void)
 {
 	glm::vec3 pos;
@@ -59,6 +69,7 @@ void Camera::buildViewMatrix(void)
 	pos.y = mRadius * cosf(mPolar);
 	mViewMatrix = glm::lookAt(pos, mTarget, mUp);
 	//mViewMatrix = glm::lookAt(mPos,mTarget,mUp);
+	m_qViewMatrix = QMatrix4x4(glm::value_ptr(mViewMatrix));
 }
 
 void Camera::buildProjectionMatrix(void)
@@ -69,6 +80,7 @@ void Camera::buildProjectionMatrix(void)
 	else {
 		mProjectionMatrix = glm::perspective(mFieldOfView, mAspect, mNear, mFar);
 	}
+	m_qProjectionMatrix = QMatrix4x4(glm::value_ptr(mProjectionMatrix));
 }
 
 void Camera::zoom(float t)

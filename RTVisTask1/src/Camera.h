@@ -7,11 +7,13 @@
 
 #pragma once
 
+#include <OpenGLEngine/ICamera.h>
+
 #include <glm/glm.hpp>
 
 #define M_PI 3.14159265358979323846
 
-class Camera
+class Camera : public OpenGLEngine::ICamera
 {
 public:
 
@@ -81,8 +83,10 @@ public:
 
 	const glm::mat4 & getViewMatrix() { return mViewMatrix; };
 
-	const glm::mat4 & getProjectionMatrix() { return mProjectionMatrix; };
-
+	const glm::mat4 & getProjectionMatrix() { return mProjectionMatrix; }
+	
+	const QMatrix4x4& GetViewMatrix() const override;
+	const QMatrix4x4& GetProjectionMatrix() const override;;
 
 private:
 	glm::mat4 mViewMatrix;
@@ -104,4 +108,7 @@ private:
 	float mTop;
 	float mBottom;
 	bool mOrthogonal;
+
+	QMatrix4x4 m_qViewMatrix;
+	QMatrix4x4 m_qProjectionMatrix;
 };
