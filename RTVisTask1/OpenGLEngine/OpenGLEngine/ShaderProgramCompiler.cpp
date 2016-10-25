@@ -13,10 +13,10 @@ void ShaderProgramCompiler::AddVertexShader(const std::wstring& folderPath, cons
 {
 	m_vertexShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Vertex);
 	{
-		auto shaderSourceCode = std::string(glswGetShader(shaderName.c_str()));
-		IncludeReplacer::ReplaceIncludes(folderPath, shaderSourceCode);
+		std::string sourceCode;
+		ReadSourceCode(folderPath, shaderName, sourceCode);
 
-		if (!m_vertexShader->compileSourceCode(shaderSourceCode.c_str()))
+		if (!m_vertexShader->compileSourceCode(sourceCode.c_str()))
 			ThrowEngineException(L"Vertex shader failed to compile: " + m_vertexShader->log().toStdWString());
 	}
 }
@@ -24,10 +24,10 @@ void ShaderProgramCompiler::AddGeometryShader(const std::wstring& folderPath, co
 {
 	m_geometryShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Geometry);
 	{
-		auto shaderSourceCode = std::string(glswGetShader(shaderName.c_str()));
-		IncludeReplacer::ReplaceIncludes(folderPath, shaderSourceCode);
+		std::string sourceCode;
+		ReadSourceCode(folderPath, shaderName, sourceCode);
 
-		if (!m_geometryShader->compileSourceCode(shaderSourceCode.c_str()))
+		if (!m_geometryShader->compileSourceCode(sourceCode.c_str()))
 			ThrowEngineException(L"Geometry shader failed to compile: " + m_geometryShader->log().toStdWString());
 	}
 }
@@ -35,10 +35,10 @@ void ShaderProgramCompiler::AddFragmentShader(const std::wstring& folderPath, co
 {
 	m_fragmentShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Fragment);
 	{
-		auto shaderSourceCode = std::string(glswGetShader(shaderName.c_str()));
-		IncludeReplacer::ReplaceIncludes(folderPath, shaderSourceCode);
+		std::string sourceCode;
+		ReadSourceCode(folderPath, shaderName, sourceCode);
 
-		if (!m_fragmentShader->compileSourceCode(shaderSourceCode.c_str()))
+		if (!m_fragmentShader->compileSourceCode(sourceCode.c_str()))
 			ThrowEngineException(L"Fragment shader failed to compile: " + m_fragmentShader->log().toStdWString());
 	}
 }
@@ -60,4 +60,14 @@ std::unique_ptr<QOpenGLShaderProgram> ShaderProgramCompiler::Compile() const
 		ThrowEngineException(L"Failed to link shader program.");
 
 	return std::move(program);
+}
+
+void ShaderProgramCompiler::ReadSourceCode(const std::wstring& folderPath, const std::string& shaderName, std::string& sourceCode) const
+{
+	sourceCode = std::string(glswGetShader(shaderName.c_str()));
+	IncludeReplacer::ReplaceIncludes(folderPath, sourceCode);
+
+#if defined(DEBUG) || defined(_DEBUG)
+	Utilities::WriteData(folderPath + L"Generated_" + Utilities::StringToWString(shaderName) + L".glsl", std::vector<char>(sourceCode.begin(), sourceCode.end()));
+#endif
 }

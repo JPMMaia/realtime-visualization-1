@@ -1,1 +1,178 @@
-// Hello! :D
+#ifndef MAX_NUM_LIGHTS
+#define MAX_NUM_LIGHTS 16
+#endif
+
+#ifndef NUM_DIR_LIGHTS
+#define NUM_DIR_LIGHTS 3
+#endif
+
+#ifndef NUM_POINT_LIGHTS
+#define NUM_POINT_LIGHTS 0
+#endif
+
+#ifndef NUM_SPOT_LIGHTS
+#define NUM_SPOT_LIGHTS 0
+#endif
+
+struct Light
+{
+    vec3 Strength;			// Light color
+    float FalloffStart;		// Point/Spot light only
+    vec3 Direction;			// Directional/Spot light only
+    float FalloffEnd;		// Point/Spot light only
+    vec3 Position;			// Point/Spot light only
+    float SpotPower;		// Spot light only
+};
+
+struct Material
+{
+    vec4 DiffuseAlbedo;
+    vec3 FresnelR0;
+    float Shininess;
+};
+
+/// <sumary>
+/// Calculates the linear attenuation which applies to point and spot lights.
+/// </sumary>
+float CalculateAttenuation(float distance, float falloffStart, float falloffEnd)
+{
+	float attenuation = (falloffEnd - distance) / (falloffEnd - falloffStart);
+
+    return clamp(attenuation, 0.0f, 1.0f);
+}
+
+/// <sumary>
+///	Schlick gives an approximation to Fresnel reflectance.
+/// R0 = ( (n-1)/(n+1) )^2, where n is the index of refraction.
+/// </sumary>
+vec3 SchlickFresnel(vec3 r0, vec3 normal, vec3 lightDirection)
+{
+    float cosIncidentAngle = clamp(dot(normal, lightDirection), 0.0f, 1.0f);
+    float f0 = 1.0f - cosIncidentAngle;
+
+    return r0 + (1.0f - r0) * (f0 * f0 * f0 * f0 * f0);
+}
+
+/// <sumary>
+/// Evaluates the light strength given the parameters.
+/// </sumary>
+vec3 BlinnPhong(vec3 lightStrength, vec3 lightDirection, vec3 normal, vec3 toEyeDirection, Material material)
+{
+    // Derive m from the shininess, which is derived from the roughness:
+	float m = material.Shininess * 256.0f;
+
+	// Calculate the halfway vector:
+	vec3 halfwayVector = normalize(toEyeDirection + lightDirection);
+
+	// Calculate the specular albedo:
+	float roughnessFactor = (m + 8.0f) * pow(max(dot(halfwayVector, normal), 0.0f), m) / 8.0f;
+	vec3 fresnelFactor = SchlickFresnel(material.FresnelR0, halfwayVector, lightDirection);
+	vec3 specularAlbedo = fresnelFactor * roughnessFactor;
+
+	// TODO
+	//specularAlbedo = specularAlbedo / (specularAlbedo + 1.0f);
+
+	return (material.DiffuseAlbedo.rgb + specularAlbedo) * lightStrength;
+}
+
+/// <sumary>
+/// Evaluates the lighting equation for directional lights.
+/// </sumary>
+vec3 ComputeDirectionalLight(Light light, Material material, vec3 normal, vec3 toEyeDirection)
+{
+    vec3 lightDirection = -light.Direction;
+
+    // Calculate Light's strenght using the Lambert's Cosine Law
+    vec3 lightStrength = light.Strength * max(dot(lightDirection, normal), 0.0f);
+
+    return BlinnPhong(lightStrength, lightDirection, normal, toEyeDirection, material);
+}
+
+/// <sumary>
+/// Evaluates the lighting equation for point lights.
+/// </sumary>
+vec3 ComputePointLight(Light light, Material material, vec3 position, vec3 normal, vec3 toEyeDirection)
+{
+    vec3 lightDirection = light.Position - position;
+
+    float distance = length(lightDirection);
+    if (distance > light.FalloffEnd)
+        return vec3(0.0f, 0.0f, 0.0f);
+
+	// Normalize the light vector:
+    lightDirection /= distance;
+
+	// Scale light by Lambert's cosine law:
+    vec3 lightStrength = light.Strength * max(dot(lightDirection, normal), 0.0f);
+
+	// Apply attenuation
+    float attenuation = CalculateAttenuation(distance, light.FalloffStart, light.FalloffEnd);
+    lightStrength *= attenuation;
+
+    return BlinnPhong(lightStrength, lightDirection, normal, toEyeDirection, material);
+}
+
+/// <sumary>
+/// Evaluates the lighting equation for spot lights.
+/// </sumary>
+vec3 ComputeSpotLight(Light light, Material material, vec3 position, vec3 normal, vec3 toEyeDirection)
+{
+    vec3 lightDirection = light.Position - position;
+
+    float distance = length(lightDirection);
+    if (distance > light.FalloffEnd)
+        return vec3(0.0f, 0.0f, 0.0f);
+
+	// Normalize the light vector:
+    lightDirection /= distance;
+	
+	// Scale light by Lambert's cosine law:
+    vec3 lightStrength = light.Strength * max(dot(lightDirection, normal), 0.0f);
+
+	// Attenuate light
+    float attenuation = CalculateAttenuation(distance, light.FalloffStart, light.FalloffEnd);
+    lightStrength *= attenuation;
+
+	// Scale by spot light:
+    float spotFactor = pow(max(dot(-lightDirection, light.Direction), 0.0f), light.SpotPower);
+    lightStrength *= spotFactor;
+
+    return BlinnPhong(lightStrength, lightDirection, normal, toEyeDirection, material);
+}
+
+/// <sumary>
+/// Evaluates the accumulated light intensity of all lights.
+/// </sumary>
+vec4 ComputeLighting(Light lights[MAX_NUM_LIGHTS], Material material, vec3 position, vec3 normal, vec3 toEyeDirection)
+{
+    vec3 result = vec3(0.0f, 0.0f, 0.0f);
+
+#if (NUM_DIR_LIGHTS > 0)
+    
+    for (int i = 0; i < NUM_DIR_LIGHTS; ++i)
+    {
+        result += ComputeDirectionalLight(lights[i], material, normal, toEyeDirection);
+    }
+
+#endif 
+	
+#if (NUM_POINT_LIGHTS > 0)
+
+    for (i = NUM_DIR_LIGHTS; i < NUM_DIR_LIGHTS + NUM_POINT_LIGHTS; ++i)
+    {
+        result += ComputePointLight(lights[i], material, position, normal, toEyeDirection);
+    }
+
+	#endif
+
+#if (NUM_SPOT_LIGHTS > 0)
+	
+    for (i = NUM_DIR_LIGHTS + NUM_POINT_LIGHTS; i < NUM_DIR_LIGHTS + NUM_POINT_LIGHTS + NUM_SPOT_LIGHTS; ++i)
+    {
+        result += ComputeSpotLight(lights[i], material, position, normal, toEyeDirection);
+    }
+
+#endif
+
+    return vec4(result, 0.0f);
+}

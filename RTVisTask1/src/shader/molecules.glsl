@@ -2,8 +2,6 @@
 
 #extension GL_ARB_explicit_attrib_location : enable
 
-#include "LightingUtils.glsli"
-
 // Input:
 in vec3 vs_in_positionW;
 in vec3 vs_in_color;
@@ -85,6 +83,8 @@ flat in vec3 gs_out_centerV;
 
 // Output:
 out vec4 fs_out_color;
+
+#include "LightingUtils.glsli"
 
 void main()
 {

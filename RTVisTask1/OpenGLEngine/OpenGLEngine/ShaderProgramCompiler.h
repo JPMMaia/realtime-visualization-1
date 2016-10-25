@@ -15,6 +15,9 @@ namespace OpenGLEngine
 		std::unique_ptr<QOpenGLShaderProgram> Compile() const;
 
 	private:
+		void ReadSourceCode(const std::wstring& folderPath, const std::string& shaderName, std::string& sourceCode) const;
+
+	private:
 		std::unique_ptr<QOpenGLShader> m_vertexShader;
 		std::unique_ptr<QOpenGLShader> m_geometryShader;
 		std::unique_ptr<QOpenGLShader> m_fragmentShader;
