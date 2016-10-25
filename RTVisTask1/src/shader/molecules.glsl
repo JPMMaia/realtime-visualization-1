@@ -27,6 +27,8 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
 // Uniforms:
+uniform mat4 u_viewMatrix;
+uniform mat4 u_projectionMatrix;
 uniform mat4 u_viewProjectionMatrix;
 uniform vec3 u_eyePositionW;
 
@@ -37,8 +39,9 @@ in float vs_out_radius[];
 
 // Output:
 out vec3 gs_out_positionW;
-out vec3 gs_out_color;
-out float gs_out_radius;
+flat out vec3 gs_out_color;
+flat out float gs_out_radius;
+flat out vec3 gs_out_centerW;
 
 void main()
 {
@@ -64,6 +67,7 @@ void main()
 		gs_out_positionW = vertices[i].xyz;
 		gs_out_color = vs_out_color[0];
 		gs_out_radius = vs_out_radius[0];
+		gs_out_centerW = centerW;
 		EmitVertex();
 	}
 	EndPrimitive();
@@ -73,13 +77,18 @@ void main()
 
 // Input:
 in vec3 gs_out_positionW;
-in vec3 gs_out_color;
-in float gs_out_radius;
+flat in vec3 gs_out_color;
+flat in float gs_out_radius;
+flat in vec3 gs_out_centerW;
 
 // Output:
 out vec4 fs_out_color;
 
 void main()
 {
+	vec3 fromCenterVector = gs_out_positionW - gs_out_centerW;
+	if (dot(fromCenterVector, fromCenterVector) > gs_out_radius * gs_out_radius)
+		discard;
+
 	fs_out_color = vec4(gs_out_color, 1.0f);
 }

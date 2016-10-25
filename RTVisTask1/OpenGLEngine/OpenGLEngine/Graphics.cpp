@@ -70,6 +70,8 @@ void Graphics::Render()
 			const auto& viewMatrix = m_camera->GetViewMatrix();
 			const auto& projectionMatrix = m_camera->GetProjectionMatrix();
 
+			moleculesShaderProgram->setUniformValue("u_viewMatrix", viewMatrix);
+			moleculesShaderProgram->setUniformValue("u_projectionMatrix", projectionMatrix);
 			moleculesShaderProgram->setUniformValue("u_viewProjectionMatrix", projectionMatrix * viewMatrix);
 			moleculesShaderProgram->setUniformValue("u_eyePositionW", m_camera->GetPosition());
 		}
