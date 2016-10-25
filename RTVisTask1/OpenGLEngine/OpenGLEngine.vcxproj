@@ -162,6 +162,7 @@
     <ClCompile Include="OpenGLEngine\GeometryGenerator.cpp" />
     <ClCompile Include="OpenGLEngine\GLHelper.cpp" />
     <ClCompile Include="OpenGLEngine\Graphics.cpp" />
+    <ClCompile Include="OpenGLEngine\IncludeReplacer.cpp" />
     <ClCompile Include="OpenGLEngine\main.cpp" />
     <ClCompile Include="OpenGLEngine\MainWidget.cpp" />
     <ClCompile Include="OpenGLEngine\MeshGeometry.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="OpenGLEngine\GLHelper.h" />
     <ClInclude Include="OpenGLEngine\Graphics.h" />
     <ClInclude Include="OpenGLEngine\ICamera.h" />
+    <ClInclude Include="OpenGLEngine\IncludeReplacer.h" />
     <ClInclude Include="OpenGLEngine\IRenderItem.h" />
     <ClInclude Include="OpenGLEngine\IScene.h" />
     <ClInclude Include="OpenGLEngine\MeshGeometry.h" />

@@ -108,6 +108,9 @@
     <ClCompile Include="OpenGLEngine\DefaultRenderItem.cpp">
       <Filter>OpenGLEngine\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="OpenGLEngine\IncludeReplacer.cpp">
+      <Filter>OpenGLEngine\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\shaders.qrc">
@@ -162,6 +165,9 @@
     </ClInclude>
     <ClInclude Include="OpenGLEngine\RenderLayer.h">
       <Filter>OpenGLEngine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLEngine\IncludeReplacer.h">
+      <Filter>OpenGLEngine\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
