@@ -185,6 +185,7 @@
     <ClInclude Include="OpenGLEngine\OpenGL.h" />
     <ClInclude Include="OpenGLEngine\DefaultRenderItem.h" />
     <ClInclude Include="OpenGLEngine\RenderLayer.h" />
+    <ClInclude Include="OpenGLEngine\ShaderBufferTypes.h" />
     <ClInclude Include="OpenGLEngine\ShaderProgramCompiler.h" />
     <ClInclude Include="OpenGLEngine\Utilities.h" />
     <ClInclude Include="OpenGLEngine\VertexTypes.h" />

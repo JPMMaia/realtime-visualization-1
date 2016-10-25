@@ -178,6 +178,9 @@
     <ClInclude Include="OpenGLEngine\ShaderProgramCompiler.h">
       <Filter>OpenGLEngine\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLEngine\ShaderBufferTypes.h">
+      <Filter>OpenGLEngine\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\vshader.glsl">

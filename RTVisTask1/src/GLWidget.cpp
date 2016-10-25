@@ -290,7 +290,7 @@ void GLWidget::DrawMolecules()
 		m_specularFactor = 0.3f;
 
 
-		GLfloat light_ambient[] = { m_ambientFactor,m_ambientFactor,m_ambientFactor, 1.0f };
+		GLfloat light_ambient[] = { m_ambientFactor,m_ambientFactor, m_ambientFactor, 1.0f };
 		GLfloat light_diffuse[] = { m_diffuseFactor, m_diffuseFactor, m_diffuseFactor, 1.0f };
 		GLfloat light_specular[] = { m_specularFactor, m_specularFactor, m_specularFactor, 1.0f };
 
