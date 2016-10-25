@@ -2,6 +2,8 @@
 
 #extension GL_ARB_explicit_attrib_location : enable
 
+#include "LightingUtils.glsli"
+
 // Input:
 in vec3 vs_in_positionW;
 in vec3 vs_in_color;

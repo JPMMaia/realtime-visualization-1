@@ -204,7 +204,7 @@ void GLWidget::paintGL()
 		break;
 	}
 }
-void GLWidget::fileChanged(const QString &path)
+void GLWidget::fileChanged(const QString& path)
 {
 	// Reboot glsw, otherwise it will use the old cached shader:
 	glswShutdown();

@@ -1,9 +1,10 @@
 #include "Graphics.h"
 #include "EngineException.h"
 #include "DefaultScene.h"
+#include "ShaderProgramCompiler.h"
+
 #include <glm/gtc/matrix_transform.inl>
 #include <glm/gtc/type_ptr.inl>
-#include "../../src/glsw.h"
 
 using namespace OpenGLEngine;
 
@@ -118,44 +119,11 @@ void Graphics::InitializeShaders()
 
 	// Molecules shader:
 	{
-		auto vertexShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Vertex);
-		{
-			auto shaderSourceCode = glswGetShader("Molecules.Vertex");
-			if (!vertexShader->compileSourceCode(shaderSourceCode))
-				ThrowEngineException(L"Vertex shader failed to compile: " + vertexShader->log().toStdWString());
-		}
-
-		auto geometryShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Geometry);
-		{
-			auto shaderSourceCode = glswGetShader("Molecules.Geometry");
-			if (!geometryShader->compileSourceCode(shaderSourceCode))
-				ThrowEngineException(L"Geometry shader failed to compile: " + geometryShader->log().toStdWString());
-		}
-
-		auto fragmentShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Fragment);
-		{
-			auto shaderSourceCode = glswGetShader("Molecules.Fragment");
-			if (!fragmentShader->compileSourceCode(shaderSourceCode))
-				ThrowEngineException(L"Fragment shader failed to compile: " + fragmentShader->log().toStdWString());
-		}
-
-		{
-			auto program = std::make_unique<QOpenGLShaderProgram>();
-
-			if (!program->addShader(vertexShader.get()))
-				ThrowEngineException(L"Failed to add vertex shader to molecules shader program.");
-
-			if (!program->addShader(geometryShader.get()))
-				ThrowEngineException(L"Failed to add geometry shader to molecules shader program.");
-
-			if (!program->addShader(fragmentShader.get()))
-				ThrowEngineException(L"Failed to add fragment shader to molecules shader program.");
-
-			if (!program->link())
-				ThrowEngineException(L"Failed to link molecules shader program.");
-
-			m_programs.emplace("MoleculesShaderProgram", std::move(program));
-		}
+		ShaderProgramCompiler compiler;
+		compiler.AddVertexShader(s_shadersFolder, "Molecules.Vertex");
+		compiler.AddGeometryShader(s_shadersFolder, "Molecules.Geometry");
+		compiler.AddFragmentShader(s_shadersFolder, "Molecules.Fragment");
+		m_programs.emplace("MoleculesShaderProgram", compiler.Compile());
 	}
 }
 

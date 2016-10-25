@@ -39,5 +39,7 @@ namespace OpenGLEngine
 
 		std::vector<std::unique_ptr<IRenderItem>> m_allRenderItems;
 		std::vector<IRenderItem*> m_renderItemLayers[static_cast<SIZE_T>(RenderLayer::Count)];
+
+		std::wstring s_shadersFolder = L"src/shader/";
 	};
 }
