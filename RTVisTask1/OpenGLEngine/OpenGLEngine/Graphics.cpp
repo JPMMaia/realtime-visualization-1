@@ -71,12 +71,17 @@ void Graphics::Render()
 			const auto& viewMatrix = m_camera->GetViewMatrix();
 			auto inverseViewMatrix = viewMatrix.inverted();
 			const auto& projectionMatrix = m_camera->GetProjectionMatrix();
+			float viewMatrixDeterminantCubicRoot = std::cbrt(viewMatrix.determinant());
+			auto viewProjectionMatrix = projectionMatrix * viewMatrix;
+			auto inverseViewProjectionMatrix = viewMatrix.inverted() * projectionMatrix.inverted();
 
 			moleculesShaderProgram->setUniformValue("u_viewMatrix", viewMatrix);
 			moleculesShaderProgram->setUniformValue("u_inverseViewMatrix", inverseViewMatrix);
 			moleculesShaderProgram->setUniformValue("u_projectionMatrix", projectionMatrix);
-			moleculesShaderProgram->setUniformValue("u_viewProjectionMatrix", projectionMatrix * viewMatrix);
+			moleculesShaderProgram->setUniformValue("u_viewProjectionMatrix", viewProjectionMatrix);
+			moleculesShaderProgram->setUniformValue("u_inverseViewProjectionMatrix", inverseViewProjectionMatrix);
 			moleculesShaderProgram->setUniformValue("u_eyePositionW", m_camera->GetPosition());
+			moleculesShaderProgram->setUniformValue("u_viewMatrixDeterminantCubicRoot", viewMatrixDeterminantCubicRoot);
 		}
 
 		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Molecules)], moleculesShaderProgram);
