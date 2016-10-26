@@ -75,6 +75,7 @@ void Graphics::Render()
 			auto viewProjectionMatrix = projectionMatrix * viewMatrix;
 			auto inverseViewProjectionMatrix = viewMatrix.inverted() * projectionMatrix.inverted();
 
+			moleculesShaderProgram->setUniformValue("u_aspectRatio", m_camera->GetAspectRatio());
 			moleculesShaderProgram->setUniformValue("u_viewMatrix", viewMatrix);
 			moleculesShaderProgram->setUniformValue("u_inverseViewMatrix", inverseViewMatrix);
 			moleculesShaderProgram->setUniformValue("u_projectionMatrix", projectionMatrix);

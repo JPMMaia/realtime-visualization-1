@@ -27,12 +27,9 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
 // Uniforms:
-uniform mat4 u_viewMatrix;
-uniform mat4 u_inverseViewMatrix;
-uniform mat4 u_projectionMatrix;
+uniform float u_aspectRatio;
 uniform mat4 u_viewProjectionMatrix;
 uniform mat4 u_inverseViewProjectionMatrix;
-uniform vec3 u_eyePositionW;
 uniform float u_viewMatrixDeterminantCubicRoot;
 
 // Input:
@@ -42,7 +39,6 @@ in float vs_out_radius[];
 
 // Output:
 out vec3 gs_out_positionW;
-out vec4 gs_out_positionH;
 flat out vec3 gs_out_color;
 flat out float gs_out_radius;
 out vec2 gs_out_textureCoordinates;
@@ -73,7 +69,8 @@ void main()
 		for (int i = 0; i < 4; ++i)
 		{
 			// Calculate displacement of the current vertex:
-			vec2 displacement = vec2(textureCoordinates[i].s * displacementScalar, textureCoordinates[i].t * displacementScalar);
+			vec2 displacement = vec2(textureCoordinates[i].x * displacementScalar, textureCoordinates[i].y * displacementScalar);
+			displacement.y *= u_aspectRatio;
 
 			// Calculate the position of the displaced vertex:
 			verticesH[i] = vec4(centerH.x + displacement.x, centerH.y + displacement.y, centerH.z, centerH.w);
@@ -84,7 +81,6 @@ void main()
 	for (int i = 0; i < 4; ++i)
 	{
 		gl_Position = verticesH[i];
-		gs_out_positionH = verticesH[i];
 		gs_out_positionW = (u_inverseViewProjectionMatrix * verticesH[i]).xyz;
 		gs_out_color = vs_out_color[0];
 		gs_out_radius = radius;
@@ -92,55 +88,17 @@ void main()
 		EmitVertex();
 	}
 	EndPrimitive();
-
-
-	/*vec3 centerV = (u_viewMatrix * vec4(vs_out_positionW[0], 1.0f)).xyz;
-	float radiusV = vs_out_radius[0];
-
-	// Calculate the local coordinate system:
-	vec3 up = vec3(0.0f, 1.0f, 0.0f);
-	vec3 forward = normalize(vec3(0.0f, 0.0f, 0.0f) - centerV);
-	vec3 right = cross(up, forward);
-
-	// Compute the position of the vertices of the billboard:
-	vec4 verticesV[4];
-	verticesV[0] = vec4(centerV - up * radiusV - right * radiusV, 1.0f);
-	verticesV[1] = vec4(centerV - up * radiusV + right * radiusV, 1.0f);
-	verticesV[2] = vec4(centerV + up * radiusV - right * radiusV, 1.0f);
-	verticesV[3] = vec4(centerV + up * radiusV + right * radiusV, 1.0f);
-
-	vec2 textureCoordinates[4] =
-	{
-		vec2(-1.0f, -1.0f),
-		vec2(1.0f, -1.0f),
-		vec2(-1.0f, 1.0f),
-		vec2(1.0f, 1.0f)
-	};
-
-	// Emit vertices:
-	for (int i = 0; i < 4; ++i)
-	{
-		gl_Position = u_projectionMatrix * verticesV[i];
-		gs_out_positionW = (u_inverseViewMatrix * verticesV[i]).xyz;
-		gs_out_color = vs_out_color[0];
-		gs_out_radiusV = radiusV;
-		gs_out_centerV = centerV;
-		gs_out_textureCoordinates = textureCoordinates[i];
-		EmitVertex();
-	}
-	EndPrimitive();*/
 }
 
 --Fragment
 
 // Uniforms:
 uniform mat4 u_inverseViewMatrix;
-uniform mat4 u_inverseViewProjectionMatrix;
+uniform mat4 u_viewProjectionMatrix;
 uniform vec3 u_eyePositionW;
 
 // Input:
 in vec3 gs_out_positionW;
-in vec4 gs_out_positionH;
 flat in vec3 gs_out_color;
 flat in float gs_out_radius;
 in vec2 gs_out_textureCoordinates;
@@ -190,33 +148,27 @@ vec2 MappingFromXYZToUV(vec3 xyz)
 
 void main()
 {
+	// Calculate vector from center to the position of this fragment, in impostor coordinates:
 	vec2 fromCenterI = gs_out_textureCoordinates;
 	float fromCenterDistanceI = length(fromCenterI);
 
-	// Discard fragments with |(s, t)| > 1:
+	// Discard fragments with |(s, t)| > 1, in order to draw spheres:
 	if (fromCenterDistanceI > 1.0f)
 		discard;
 
-	// Calculate new z value:
+	// Calculate new z value in world space:
 	float z = gs_out_positionW.z - (1.0f - fromCenterDistanceI) * gs_out_radius;
 	vec3 positionW = vec3(gs_out_positionW.x, gs_out_positionW.y, z);
 
-	// Calculate normal in screen space:
-	vec3 normalH = vec3(fromCenterI.x, fromCenterI.y, 1.0f - fromCenterDistanceI);
+	// Calculate the position in clip space and then perform the perspective divide on z to calculate the correct depth of the fragment:
+	vec4 positionH = u_viewProjectionMatrix * vec4(positionW, 1.0f);
+	gl_FragDepth = positionH.z / positionH.w;
 
-	// Transform normal from screen space to world space:
-	vec3 normalW = (u_inverseViewProjectionMatrix * vec4(normalH, 0.0f)).xyz;
-	normalW = normalize(normalW);
+	// Calculate normal in view space:
+	vec3 normalV = vec3(fromCenterI.x, fromCenterI.y, 1.0f - fromCenterDistanceI);
 
-	vec2 normalUV = MappingFromXYZToUV(normalW);
-	normalUV.x = normalUV.x + gs_out_textureCoordinates.x;
-	normalUV.y = normalUV.y + gs_out_textureCoordinates.y;
-	//normalW = normalize(normalW);
-
-	float sp = sqrt(1.0f - fromCenterDistanceI * fromCenterDistanceI);
-	vec3 s = vec3(fromCenterI.x, fromCenterI.y, sp);
-	normalW = normalize(s);
-	normalW = (u_inverseViewMatrix * vec4(normalW, 0.0f)).xyz;
+	// Transform normal from view space to world space:
+	vec3 normalW = (u_inverseViewMatrix * vec4(normalV, 0.0f)).xyz;
 	normalW = normalize(normalW);
 
 	Light lights[MAX_NUM_LIGHTS];
@@ -225,16 +177,20 @@ void main()
 	lights[0].FalloffEnd = 200.0f;
 	lights[0].Position = vec3(0.0f, 0.0f, -100.0f);
 
+	// Create a material:
 	Material material;
 	material.DiffuseAlbedo = vec4(gs_out_color, 1.0f);
 	material.FresnelR0 = vec3(0.95f, 0.93f, 0.88f);
 	material.Shininess = 32.0f;
 
+	// Compute lighting:
 	vec4 lightIntensity = ComputeLighting(lights, material, positionW, normalW, u_eyePositionW);
 	vec4 ambientIntensity = vec4(0.05f, 0.05f, 0.05f, 0.0f);
 
+	// The final color is a sum of the light and ambient intensities:
 	vec4 color = lightIntensity + ambientIntensity;
 	color.a = 1.0f;
 
 	fs_out_color = color;
+	//fs_out_color = vec4(depth, 0.0f, 0.0f, 1.0f);
 }

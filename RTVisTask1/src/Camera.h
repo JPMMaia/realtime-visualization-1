@@ -85,6 +85,7 @@ public:
 
 	const glm::mat4 & getProjectionMatrix() { return mProjectionMatrix; }
 	
+	float GetAspectRatio() const override;
 	const QVector3D& GetPosition() const override;;
 	const QMatrix4x4& GetViewMatrix() const override;
 	const QMatrix4x4& GetProjectionMatrix() const override;

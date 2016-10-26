@@ -32,7 +32,7 @@ void Camera::reset()
 	mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	mTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	mNear = 0.01f;
-	mFar = 1000.0f;
+	mFar = 1000.0f;	
 	mFieldOfView = 45.0f;
 	mAspect = 4.0f / 3.0f;
 	mOrthogonal = false;
@@ -52,6 +52,10 @@ void Camera::setOrthogonalBorders(float left, float right, float top, float bott
 	mBottom = bottom;
 }
 
+float Camera::GetAspectRatio() const
+{
+	return mAspect;
+}
 const QVector3D& Camera::GetPosition() const
 {
 	return m_qPosition;
