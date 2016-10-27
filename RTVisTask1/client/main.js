@@ -21,8 +21,12 @@ function setupUI()
 	var pauseButton = document.getElementById("pause_button");
 	pauseButton.onclick = onPauseClick;
 	
-	var animationSlider = document.getElementById("animation_slider");
-	animationSlider.oninput = onAnimationSliderInput;
+	var frameSlider = document.getElementById("frame_slider");
+	frameSlider.onchange = onAnimationSliderInput;
+	frameSlider.setAttribute("min", 0);
+	frameSlider.setAttribute("max", g_application.getFrameCount());
+	frameSlider.setAttribute("step", 1);
+	frameSlider.value = 0;
 }
 
 function run()
@@ -34,7 +38,7 @@ function run()
         {
             window.requestAnimationFrame(run);
         },
-        30
+        200
     );
 }
 

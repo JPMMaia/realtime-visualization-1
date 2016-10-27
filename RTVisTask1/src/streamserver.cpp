@@ -12,11 +12,12 @@
 
 QT_USE_NAMESPACE
 
-StreamServer::StreamServer(quint16 port, bool debug, QWidget &widget, double pixelRatio, QObject *parent) :
+StreamServer::StreamServer(quint16 port, bool debug, QWidget &widget, size_t frameCount, double pixelRatio, QObject *parent) :
 	QObject(parent),
 	m_pWebSocketServer(new QWebSocketServer(QStringLiteral("Marion"), QWebSocketServer::NonSecureMode, this)),
 	m_clients(),
 	m_debug(debug),
+	m_frameCount(frameCount),
 	widget(widget),
 	pixelRatio(pixelRatio)
 {
@@ -68,6 +69,20 @@ void StreamServer::processTextMessage(QString message)
 		if (message == "req_image") {
 			sendImage(pClient, "JPG", 100);
 		}
+		else if (message.startsWith("req_image"))
+		{
+			auto arguments = message.split(" ");
+			if (arguments.size() != 2)
+				return;
+
+			bool success;
+			auto frameNumber = arguments[1].toInt(&success);
+			if (!success)
+				return;
+
+			onFrameRequest(frameNumber);
+			sendImage(pClient, "JPG", 90);
+		}
 		else if (message.startsWith("req_move_mouse_xy")) {
 			Propagation<MouseMove> prop(message, widget, pixelRatio);
 			prop.exec();
@@ -111,12 +126,6 @@ void StreamServer::socketDisconnected()
 		pClient->deleteLater();
 	}
 }
-
-
-
-
-
-
 
 void StreamServer::sendImage(QWebSocket *client, const char *format, int quality)
 {

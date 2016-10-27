@@ -37,13 +37,12 @@ public:
 	{
 		return m_glWidget;
 	}
+	size_t getFrameCount() const;
 
 protected slots :
 
 	void openFileAction();
 	void closeAction();
-
-	void frameChanged(int value);
 
 	void ambientChanged(double value);
 	void diffuseChanged(double value);
@@ -53,6 +52,8 @@ protected slots :
 
 	void playAnimation();
 	void pauseAnimation();
+
+	void frameChanged(int value);
 
 private:
 

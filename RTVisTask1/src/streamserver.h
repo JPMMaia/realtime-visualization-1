@@ -122,10 +122,11 @@ class StreamServer : public QObject
 {
 	Q_OBJECT
 public:
-	explicit StreamServer(quint16 port, bool debug, QWidget &widget, double pixelRatio = 1.0, QObject *parent = Q_NULLPTR);
+	explicit StreamServer(quint16 port, bool debug, QWidget &widget, size_t frameCount, double pixelRatio = 1.0, QObject *parent = Q_NULLPTR);
 	~StreamServer();
 
 signals:
+	void onFrameRequest(int frameNumber);
 	void closed();
 
 	private slots:
@@ -145,6 +146,7 @@ private:
 	QByteArray previousArray;
 	QWidget &widget;
 	double pixelRatio;
+	size_t m_frameCount;
 };
 
 #endif //STREAMSERVER_H

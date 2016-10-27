@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 
 	auto server = new StreamServer(1234, false, mainWindow, application.devicePixelRatio());
 	QObject::connect(server, &StreamServer::closed, &application, &QCoreApplication::quit);
+	QObject::connect(server, SIGNAL(onFrameRequest(int)), &mainWindow, SLOT(frameChanged(int)));
 
 	return application.exec();
 }

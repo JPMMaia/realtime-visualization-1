@@ -65,6 +65,11 @@ MainWindow::~MainWindow()
 // Slots
 //-------------------------------------------------------------------------------------------------
 
+size_t MainWindow::getFrameCount() const
+{
+	return m_animation.size();
+}
+
 void MainWindow::openFileAction()
 {
 	QString filename = QFileDialog::getOpenFileName(this, "Data File", 0, tr("Data Files (*.nc)"));

@@ -58,9 +58,6 @@
     <ClCompile Include="generated\moc_MainWindow.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="generated\moc_streamserver.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="generated\moc_GLWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -75,6 +72,9 @@
     </ClCompile>
     <ClCompile Include="src\MoleculesRenderItem.cpp">
       <Filter>Content\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="generated\moc_streamserver.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
