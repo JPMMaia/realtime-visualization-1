@@ -171,6 +171,7 @@ void main()
 	vec3 normalW = (u_inverseViewMatrix * vec4(normalV, 0.0f)).xyz;
 	normalW = normalize(normalW);
 
+	// TODO
 	Light lights[MAX_NUM_LIGHTS];
 	lights[0].Strength = vec3(0.8f, 0.8f, 0.8f);
 	lights[0].FalloffStart = 100.0f;
@@ -192,5 +193,4 @@ void main()
 	color.a = 1.0f;
 
 	fs_out_color = color;
-	//fs_out_color = vec4(depth, 0.0f, 0.0f, 1.0f);
 }

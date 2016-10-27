@@ -10,7 +10,10 @@ namespace RTVis
 	public:
 		void Render(OpenGLEngine::OpenGL* openGL, QOpenGLShaderProgram* program) const override;
 
+		const std::string& GetName() const override;
+
 	public:
+		std::string Name;
 		OpenGLEngine::MeshGeometry* Mesh;
 		GLuint PrimitiveType;
 	};

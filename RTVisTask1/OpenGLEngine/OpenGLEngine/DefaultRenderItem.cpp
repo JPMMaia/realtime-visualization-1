@@ -30,3 +30,8 @@ void DefaultRenderItem::Render(OpenGL* openGL, QOpenGLShaderProgram* program) co
 	// Draw cube geometry using indices from VBO 1:
 	openGL->glDrawElements(this->PrimitiveType, static_cast<GLsizei>(this->Mesh->GetIndexCount()), GL_UNSIGNED_INT, nullptr);
 }
+
+const std::string& DefaultRenderItem::GetName() const
+{
+	return this->Name;
+}

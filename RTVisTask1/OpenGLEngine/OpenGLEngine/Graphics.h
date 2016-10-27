@@ -25,6 +25,7 @@ namespace OpenGLEngine
 		void Render();
 
 		void AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem, std::initializer_list<RenderLayer> renderLayers);
+		void ClearAllRenderItems();
 
 		OpenGL& GetOpenGL();
 

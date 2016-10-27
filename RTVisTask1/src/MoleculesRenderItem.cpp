@@ -32,6 +32,10 @@ void MoleculesRenderItem::Render(OpenGLEngine::OpenGL* openGL, QOpenGLShaderProg
 	program->setAttributeBuffer(radiusLocation, GL_FLOAT, offset, 1, stride);
 
 	// Draw geometry:
-	//openGL->glDrawArrays(this->PrimitiveType, 0, static_cast<GLsizei>(this->Mesh->GetIndexCount()));
 	openGL->glDrawElements(this->PrimitiveType, static_cast<GLsizei>(this->Mesh->GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+}
+
+const std::string& MoleculesRenderItem::GetName() const
+{
+	return this->Name;
 }

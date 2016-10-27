@@ -14,6 +14,8 @@ void MoleculesScene::InitializeGeometry(const std::vector<Atom>& atoms)
 {
 	using namespace VertexTypes;
 
+	m_meshes.clear();
+
 	// Create atoms mesh:
 	{
 		GeometryGenerator::MeshData<PositionColorRadiusVertexType> atomsMesh;
@@ -39,6 +41,8 @@ void MoleculesScene::InitializeGeometry(const std::vector<Atom>& atoms)
 
 void MoleculesScene::InitializeRenderItems(Graphics* graphics)
 {
+	graphics->ClearAllRenderItems();
+
 	// Create molecules render item:
 	{
 		auto moleculesRenderItem = std::make_unique<MoleculesRenderItem>();

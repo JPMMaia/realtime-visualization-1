@@ -101,6 +101,13 @@ void Graphics::AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem, std::ini
 
 	m_allRenderItems.push_back(std::move(renderItem));
 }
+void Graphics::ClearAllRenderItems()
+{
+	for (auto& renderLayer : m_renderItemLayers)
+		renderLayer.clear();
+
+	m_allRenderItems.clear();
+}
 
 OpenGL& Graphics::GetOpenGL()
 {
