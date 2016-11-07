@@ -92,12 +92,15 @@ void main()
 
 --Fragment
 
+#include "LightingUtils.glsli"
+
 // Uniforms:
 uniform mat4 u_inverseViewMatrix;
 uniform mat4 u_viewProjectionMatrix;
 uniform vec3 u_eyePositionW;
 uniform vec3 u_materialFresnelR0;
 uniform float u_materialShininess;
+uniform Light u_lights[MAX_NUM_LIGHTS];
 
 // Input:
 in vec3 gs_out_positionW;
@@ -107,8 +110,6 @@ in vec2 gs_out_textureCoordinates;
 
 // Output:
 out vec4 fs_out_color;
-
-#include "LightingUtils.glsli"
 
 vec3 MappingFromUVToXYZ(vec2 uv)
 {
@@ -173,13 +174,6 @@ void main()
 	vec3 normalW = (u_inverseViewMatrix * vec4(normalV, 0.0f)).xyz;
 	normalW = normalize(normalW);
 
-	// TODO
-	Light lights[MAX_NUM_LIGHTS];
-	lights[0].Strength = vec3(0.8f, 0.8f, 0.8f);
-	lights[0].FalloffStart = 100.0f;
-	lights[0].FalloffEnd = 200.0f;
-	lights[0].Position = vec3(0.0f, 0.0f, -100.0f);
-
 	// Create a material:
 	Material material;
 	material.DiffuseAlbedo = vec4(gs_out_color, 1.0f);
@@ -187,7 +181,7 @@ void main()
 	material.Shininess = u_materialShininess;
 
 	// Compute lighting:
-	vec4 lightIntensity = ComputeLighting(lights, material, positionW, normalW, u_eyePositionW);
+	vec4 lightIntensity = ComputeLighting(u_lights, material, positionW, normalW, u_eyePositionW);
 	vec4 ambientIntensity = vec4(0.05f, 0.05f, 0.05f, 0.0f);
 
 	// The final color is a sum of the light and ambient intensities:

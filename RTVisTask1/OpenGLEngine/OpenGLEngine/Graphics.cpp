@@ -20,7 +20,7 @@ void Graphics::Initialize()
 	InitializeShaders();
 }
 
-void Graphics::OnResize(int width, int height)
+void Graphics::OnResize(int, int)
 {
 }
 
@@ -83,6 +83,10 @@ void Graphics::Render()
 			moleculesShaderProgram->setUniformValue("u_inverseViewProjectionMatrix", inverseViewProjectionMatrix);
 			moleculesShaderProgram->setUniformValue("u_eyePositionW", m_camera->GetPosition());
 			moleculesShaderProgram->setUniformValue("u_viewMatrixDeterminantCubicRoot", viewMatrixDeterminantCubicRoot);
+			moleculesShaderProgram->setUniformValue("u_lights[0].Strength", QVector3D(0.8f, 0.8f, 0.8f));
+			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffStart", 100.0f);
+			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffEnd", 200.0f);
+			moleculesShaderProgram->setUniformValue("u_lights[0].Position", QVector3D(0.0f, 0.0f, -100.0f));
 		}
 
 		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Molecules)], moleculesShaderProgram);
