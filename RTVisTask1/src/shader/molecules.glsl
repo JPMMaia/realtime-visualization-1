@@ -96,6 +96,8 @@ void main()
 uniform mat4 u_inverseViewMatrix;
 uniform mat4 u_viewProjectionMatrix;
 uniform vec3 u_eyePositionW;
+uniform vec3 u_materialFresnelR0;
+uniform float u_materialShininess;
 
 // Input:
 in vec3 gs_out_positionW;
@@ -181,8 +183,8 @@ void main()
 	// Create a material:
 	Material material;
 	material.DiffuseAlbedo = vec4(gs_out_color, 1.0f);
-	material.FresnelR0 = vec3(0.95f, 0.93f, 0.88f);
-	material.Shininess = 32.0f;
+	material.FresnelR0 = u_materialFresnelR0;
+	material.Shininess = u_materialShininess;
 
 	// Compute lighting:
 	vec4 lightIntensity = ComputeLighting(lights, material, positionW, normalW, u_eyePositionW);

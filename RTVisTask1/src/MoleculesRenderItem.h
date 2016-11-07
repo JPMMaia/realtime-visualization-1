@@ -2,6 +2,7 @@
 
 #include "OpenGLEngine/IRenderItem.h"
 #include "OpenGLEngine/MeshGeometry.h"
+#include "OpenGLEngine/ShaderBufferTypes.h"
 
 namespace RTVis
 {
@@ -15,6 +16,7 @@ namespace RTVis
 	public:
 		std::string Name;
 		OpenGLEngine::MeshGeometry* Mesh;
+		OpenGLEngine::ShaderBufferTypes::MaterialConstants MaterialConstants;
 		GLuint PrimitiveType;
 	};
 }

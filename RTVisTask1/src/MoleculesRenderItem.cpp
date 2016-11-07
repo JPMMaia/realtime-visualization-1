@@ -31,6 +31,15 @@ void MoleculesRenderItem::Render(OpenGLEngine::OpenGL* openGL, QOpenGLShaderProg
 	program->enableAttributeArray(radiusLocation);
 	program->setAttributeBuffer(radiusLocation, GL_FLOAT, offset, 1, stride);
 
+	// Set material:
+	{
+		auto materialFresnelR0Location = program->uniformLocation("u_materialFresnelR0");
+		program->setUniformValue(materialFresnelR0Location, this->MaterialConstants.FresnelR0);
+
+		auto materialShininessLocation = program->uniformLocation("u_materialShininess");
+		program->setUniformValue(materialShininessLocation, this->MaterialConstants.Shininess);
+	}
+
 	// Draw geometry:
 	openGL->glDrawElements(this->PrimitiveType, static_cast<GLsizei>(this->Mesh->GetIndexCount()), GL_UNSIGNED_INT, nullptr);
 }

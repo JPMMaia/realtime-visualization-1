@@ -46,8 +46,11 @@ void MoleculesScene::InitializeRenderItems(Graphics* graphics)
 	// Create molecules render item:
 	{
 		auto moleculesRenderItem = std::make_unique<MoleculesRenderItem>();
+		moleculesRenderItem->Name = "Molecules";
 		moleculesRenderItem->Mesh = &m_meshes.at("Atoms Mesh");
 		moleculesRenderItem->PrimitiveType = GL_POINTS;
+		moleculesRenderItem->MaterialConstants.FresnelR0 = QVector3D(0.95f, 0.93f, 0.88f);
+		moleculesRenderItem->MaterialConstants.Shininess = 32.0f;
 
 		graphics->AddRenderItem(std::move(moleculesRenderItem), { RenderLayer::Molecules });
 	}
