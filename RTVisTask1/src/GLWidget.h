@@ -12,7 +12,6 @@
 #include "PdbLoader.h"
 #include "BufferTypes.h"
 #include "OpenGLEngine/Graphics.h"
-#include "OpenGLEngine/DefaultScene.h"
 #include "MoleculesScene.h"
 
 #include <QOpenGLDebugLogger>
@@ -77,7 +76,6 @@ protected slots:
 private:
 	void InitializeFileWatcher();
 	static void InitializeGLSW();
-	void InitializeMoleculeShader() const;
 	void DrawMolecules();
 	void AllocateGPUBuffer(int frameNumber);
 	void CalculateFPS();
@@ -141,7 +139,6 @@ private:
 	bool m_isImposerRendering = true;
 
 	OpenGLEngine::Graphics m_graphics;
-	OpenGLEngine::DefaultScene m_defaultScene;
 	RTVis::MoleculesScene m_moleculesScene;
 
 	std::unique_ptr<QOpenGLDebugLogger> m_logger;

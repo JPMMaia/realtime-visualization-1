@@ -1,6 +1,5 @@
 #include "Graphics.h"
 #include "EngineException.h"
-#include "DefaultScene.h"
 #include "ShaderProgramCompiler.h"
 
 #include <glm/gtc/matrix_transform.inl>
@@ -32,32 +31,6 @@ void Graphics::Render()
 	// Clear color and depth buffers:
 	m_openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Render texture layer:
-	{
-		auto textureShaderProgram = m_programs.at("TextureShaderProgram").get();
-
-		// Bind shader pipeline for use:
-		if (!textureShaderProgram->bind())
-			ThrowEngineException(L"Program failed to bind.");
-
-		// Set uniforms:
-		{
-			// Calculate model view transformation:
-			QMatrix4x4 matrix;
-			matrix.translate(0.0, 0.0, -5.0);
-
-			const auto& viewMatrix = m_camera->GetViewMatrix();
-			const auto& projectionMatrix = m_camera->GetProjectionMatrix();
-
-			textureShaderProgram->setUniformValue("mvp_matrix", projectionMatrix * viewMatrix * matrix);
-		}
-
-		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Texture)], textureShaderProgram);
-
-		// Unbind shader pipeline:
-		textureShaderProgram->release();
-	}
-
 	// Render molecules layer:
 	{
 		auto moleculesShaderProgram = m_programs.at("MoleculesShaderProgram").get();
@@ -87,6 +60,7 @@ void Graphics::Render()
 			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffStart", 100.0f);
 			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffEnd", 200.0f);
 			moleculesShaderProgram->setUniformValue("u_lights[0].Position", QVector3D(0.0f, 0.0f, -100.0f));
+			moleculesShaderProgram->setUniformValue("u_ambientIntensity", QVector3D(0.25f, 0.25f, 0.25f));
 		}
 
 		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Molecules)], moleculesShaderProgram);
@@ -120,22 +94,6 @@ OpenGL& Graphics::GetOpenGL()
 
 void Graphics::InitializeShaders()
 {
-	// Texture program shader:
-	{
-		auto program = std::make_unique<QOpenGLShaderProgram>();
-		
-		if (!program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
-			ThrowEngineException(L"Vertex shader failed to compile.");
-
-		if (!program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-			ThrowEngineException(L"Fragment shader failed to compile.");
-
-		if (!program->link())
-			ThrowEngineException(L"Program failed to link.");
-
-		m_programs.emplace("TextureShaderProgram", std::move(program));
-	}
-
 	// Molecules shader:
 	{
 		ShaderProgramCompiler compiler;

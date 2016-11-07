@@ -66,11 +66,11 @@ vec3 BlinnPhong(vec3 lightStrength, vec3 lightDirection, vec3 normal, vec3 toEye
 
 	// Calculate the specular albedo:
 	float roughnessFactor = (m + 8.0f) * pow(max(dot(halfwayVector, normal), 0.0f), m) / 8.0f;
-	vec3 fresnelFactor = SchlickFresnel(material.FresnelR0, halfwayVector, lightDirection);
+	vec3 fresnelFactor = SchlickFresnel(material.FresnelR0, normal, lightDirection);
 	vec3 specularAlbedo = fresnelFactor * roughnessFactor;
 
-	// TODO
-	//specularAlbedo = specularAlbedo / (specularAlbedo + 1.0f);
+	// The equation used goes off the [0, 1] range, so it needs to be scaled:
+	specularAlbedo = specularAlbedo / (specularAlbedo + 1.0f);
 
 	return (material.DiffuseAlbedo.rgb + specularAlbedo) * lightStrength;
 }

@@ -2,6 +2,7 @@
 
 #include "OpenGLEngine/IScene.h"
 #include "OpenGLEngine/Graphics.h"
+#include "OpenGLEngine/MeshGeometry.h"
 #include "Commons.h"
 
 namespace RTVis
@@ -17,6 +18,5 @@ namespace RTVis
 
 	private:
 		std::unordered_map<std::string, OpenGLEngine::MeshGeometry> m_meshes;
-		std::unordered_map<std::string, OpenGLEngine::MeshGeometry> m_materials;
 	};
 }

@@ -61,12 +61,6 @@
     <ClCompile Include="generated\moc_GLWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_textures.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_shaders.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MoleculesScene.cpp">
       <Filter>Content</Filter>
     </ClCompile>
@@ -89,12 +83,6 @@
     </CustomBuild>
     <CustomBuild Include="src\streamserver.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="res\textures.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="res\shaders.qrc">
-      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -133,19 +121,8 @@
     <None Include="src\shader\Molecules.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="res\vshader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\fshader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="src\shader\LightingUtils.glsli">
       <Filter>Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\cube.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "OpenGL.h"
-#include "DefaultScene.h"
 #include "IRenderItem.h"
 #include "ICamera.h"
 #include "RenderLayer.h"
 
 #include <QtGui/QOpenGLShaderProgram>
 #include <unordered_map>
+#include <memory>
 
 namespace OpenGLEngine
 {

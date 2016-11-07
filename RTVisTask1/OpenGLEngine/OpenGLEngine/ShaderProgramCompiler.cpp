@@ -9,6 +9,11 @@
 
 using namespace OpenGLEngine;
 
+void ShaderProgramCompiler::AddDefine(const std::string& define, const std::string& value)
+{
+	m_defines.emplace(define, value);
+}
+
 void ShaderProgramCompiler::AddVertexShader(const std::wstring& folderPath, const std::string& shaderName)
 {
 	m_vertexShader = std::make_unique<QOpenGLShader>(QOpenGLShader::Vertex);
@@ -37,7 +42,7 @@ void ShaderProgramCompiler::AddFragmentShader(const std::wstring& folderPath, co
 	{
 		std::string sourceCode;
 		ReadSourceCode(folderPath, shaderName, sourceCode);
-
+		
 		if (!m_fragmentShader->compileSourceCode(sourceCode.c_str()))
 			ThrowEngineException(L"Fragment shader failed to compile: " + m_fragmentShader->log().toStdWString());
 	}
@@ -66,6 +71,11 @@ void ShaderProgramCompiler::ReadSourceCode(const std::wstring& folderPath, const
 {
 	sourceCode = std::string(glswGetShader(shaderName.c_str()));
 	IncludeReplacer::ReplaceIncludes(folderPath, sourceCode);
+
+	for(auto& pair : m_defines)
+	{
+		sourceCode = "#define " + pair.first + " " + pair.second + "\n" + sourceCode;
+	}
 
 #if defined(DEBUG) || defined(_DEBUG)
 	Utilities::WriteData(folderPath + L"Generated_" + Utilities::StringToWString(shaderName) + L".glsl", std::vector<char>(sourceCode.begin(), sourceCode.end()));

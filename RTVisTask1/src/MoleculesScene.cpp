@@ -49,8 +49,8 @@ void MoleculesScene::InitializeRenderItems(Graphics* graphics)
 		moleculesRenderItem->Name = "Molecules";
 		moleculesRenderItem->Mesh = &m_meshes.at("Atoms Mesh");
 		moleculesRenderItem->PrimitiveType = GL_POINTS;
-		moleculesRenderItem->MaterialConstants.FresnelR0 = QVector3D(0.95f, 0.93f, 0.88f);
-		moleculesRenderItem->MaterialConstants.Shininess = 32.0f;
+		moleculesRenderItem->MaterialConstants.FresnelR0 = QVector3D(0.1f, 0.1f, 0.1f);
+		moleculesRenderItem->MaterialConstants.Shininess = 0.3f;
 
 		graphics->AddRenderItem(std::move(moleculesRenderItem), { RenderLayer::Molecules });
 	}

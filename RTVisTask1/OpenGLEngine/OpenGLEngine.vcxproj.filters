@@ -55,9 +55,6 @@
     <Filter Include="OpenGLEngine\Models">
       <UniqueIdentifier>{88bae82e-28ed-4a76-be09-8069ee776c0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OpenGLEngine\Widgets">
-      <UniqueIdentifier>{5bff7f1c-3d6f-4686-820d-b3f99558a35e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OpenGLEngine\Cameras">
       <UniqueIdentifier>{ef194e67-57e0-4093-b228-48150cd9b4c0}</UniqueIdentifier>
     </Filter>
@@ -66,21 +63,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenGLEngine\main.cpp">
-      <Filter>OpenGLEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MainWidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MainWidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_shaders.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_textures.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGLEngine\Utilities.cpp">
       <Filter>OpenGLEngine\Utilities</Filter>
     </ClCompile>
@@ -89,9 +71,6 @@
     </ClCompile>
     <ClCompile Include="OpenGLEngine\EngineException.cpp">
       <Filter>OpenGLEngine\Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\DefaultScene.cpp">
-      <Filter>OpenGLEngine\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="OpenGLEngine\Graphics.cpp">
       <Filter>OpenGLEngine\Core</Filter>
@@ -105,29 +84,12 @@
     <ClCompile Include="OpenGLEngine\GeometryGenerator.cpp">
       <Filter>OpenGLEngine\Models</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLEngine\MainWidget.cpp">
-      <Filter>OpenGLEngine\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLEngine\DefaultRenderItem.cpp">
-      <Filter>OpenGLEngine\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="OpenGLEngine\IncludeReplacer.cpp">
       <Filter>OpenGLEngine\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="OpenGLEngine\ShaderProgramCompiler.cpp">
       <Filter>OpenGLEngine\Shaders</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Resources\shaders.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Resources\textures.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="OpenGLEngine\MainWidget.h">
-      <Filter>OpenGLEngine\Widgets</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGLEngine\Utilities.h">
@@ -140,9 +102,6 @@
       <Filter>OpenGLEngine\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\IScene.h">
-      <Filter>OpenGLEngine\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLEngine\DefaultScene.h">
       <Filter>OpenGLEngine\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLEngine\Graphics.h">
@@ -163,9 +122,6 @@
     <ClInclude Include="OpenGLEngine\ICamera.h">
       <Filter>OpenGLEngine\Cameras</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLEngine\DefaultRenderItem.h">
-      <Filter>OpenGLEngine\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGLEngine\IRenderItem.h">
       <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
@@ -181,18 +137,5 @@
     <ClInclude Include="OpenGLEngine\ShaderBufferTypes.h">
       <Filter>OpenGLEngine\Resources</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\vshader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\fshader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\cube.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

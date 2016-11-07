@@ -46,9 +46,6 @@ void GLWidget::MoleculeRenderMode(std::vector<std::vector<Atom>>* animation)
 	m_animation = animation;
 	m_renderMode = RenderMode::NETCDF;
 
-	// Load program:
-	InitializeMoleculeShader();
-
 	// Allocate GPU memory for frame 0:
 	AllocateGPUBuffer(0);
 }
@@ -152,11 +149,10 @@ void GLWidget::initializeGL()
 
 	// Initialize graphics component:
 	m_graphics.Initialize();
-	m_defaultScene.Initialize(&m_graphics);
 
 	// Display GPU memory data:
 	{
-		/*auto total_mem_kb = 0;
+		auto total_mem_kb = 0;
 		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
 		&total_mem_kb);
 
@@ -167,7 +163,7 @@ void GLWidget::initializeGL()
 		auto total_mem_mb = float(total_mem_kb) / 1024.0f;
 
 		m_mainWindow->displayTotalGPUMemory(total_mem_mb);
-		m_mainWindow->displayUsedGPUMemory(0);*/
+		m_mainWindow->displayUsedGPUMemory(0);
 	}
 
 	// Setup timers:
@@ -209,8 +205,6 @@ void GLWidget::fileChanged(const QString& path)
 	// Reboot glsw, otherwise it will use the old cached shader:
 	glswShutdown();
 	InitializeGLSW();
-
-	InitializeMoleculeShader();
 	
 	QWidget::update();
 }
@@ -242,10 +236,6 @@ void GLWidget::InitializeGLSW()
 	const char *shader_path = ba.data();
 	glswSetPath(shader_path, ".glsl");
 	glswAddDirectiveToken("", "#version 330");
-}
-void GLWidget::InitializeMoleculeShader() const
-{
-	// TODO initialize molecule shader
 }
 void GLWidget::DrawMolecules()
 {
@@ -375,7 +365,6 @@ void GLWidget::AllocateGPUBuffer(int frameNumber)
 
 	// Display used GPU memory:
 	{
-		/*
 		// Get total memory:
 		auto totalMemoryKB = 0;
 		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &totalMemoryKB);
@@ -388,7 +377,6 @@ void GLWidget::AllocateGPUBuffer(int frameNumber)
 
 		// Display used GPU memory:
 		m_mainWindow->displayUsedGPUMemory(totalMemoryMB - currentAvailableMemoryMB);
-		*/
 	}
 }
 void GLWidget::CalculateFPS()

@@ -101,6 +101,7 @@ uniform vec3 u_eyePositionW;
 uniform vec3 u_materialFresnelR0;
 uniform float u_materialShininess;
 uniform Light u_lights[MAX_NUM_LIGHTS];
+uniform vec3 u_ambientIntensity;
 
 // Input:
 in vec3 gs_out_positionW;
@@ -181,8 +182,9 @@ void main()
 	material.Shininess = u_materialShininess;
 
 	// Compute lighting:
-	vec4 lightIntensity = ComputeLighting(u_lights, material, positionW, normalW, u_eyePositionW);
-	vec4 ambientIntensity = vec4(0.05f, 0.05f, 0.05f, 0.0f);
+	vec3 toEyeDirection = normalize(u_eyePositionW - positionW);
+	vec4 lightIntensity = ComputeLighting(u_lights, material, positionW, normalW, toEyeDirection);
+	vec4 ambientIntensity = vec4(u_ambientIntensity, 1.0f) * vec4(gs_out_color, 1.0f);
 
 	// The final color is a sum of the light and ambient intensities:
 	vec4 color = lightIntensity + ambientIntensity;
