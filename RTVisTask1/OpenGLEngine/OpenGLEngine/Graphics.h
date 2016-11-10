@@ -25,9 +25,13 @@ namespace OpenGLEngine
 		void Render();
 
 		void AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem, std::initializer_list<RenderLayer> renderLayers);
+		IRenderItem* GetRenderItem(const std::string& name) const;
 		void ClearAllRenderItems();
 
 		OpenGL& GetOpenGL();
+
+		void SetLightDiffuseIntensity(float value);
+		void SetLightAmbientIntensity(float value);
 
 	private:
 		void InitializeShaders();
@@ -42,5 +46,7 @@ namespace OpenGLEngine
 		std::vector<IRenderItem*> m_renderItemLayers[static_cast<SIZE_T>(RenderLayer::Count)];
 
 		std::wstring s_shadersFolder = L"src/shader/";
+		float m_lightDiffuseIntensity = 0.5f;
+		float m_lightAmbientIntensity = 0.05f;
 	};
 }

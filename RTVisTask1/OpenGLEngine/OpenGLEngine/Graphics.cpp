@@ -1,12 +1,12 @@
 #include "Graphics.h"
 #include "EngineException.h"
 #include "ShaderProgramCompiler.h"
+#include "Utilities.h"
 
 #include <glm/gtc/matrix_transform.inl>
 #include <glm/gtc/type_ptr.inl>
 
 using namespace OpenGLEngine;
-
 
 Graphics::Graphics(ICamera* camera) :
 	m_camera(camera)
@@ -56,11 +56,11 @@ void Graphics::Render()
 			moleculesShaderProgram->setUniformValue("u_inverseViewProjectionMatrix", inverseViewProjectionMatrix);
 			moleculesShaderProgram->setUniformValue("u_eyePositionW", m_camera->GetPosition());
 			moleculesShaderProgram->setUniformValue("u_viewMatrixDeterminantCubicRoot", viewMatrixDeterminantCubicRoot);
-			moleculesShaderProgram->setUniformValue("u_lights[0].Strength", QVector3D(0.8f, 0.8f, 0.8f));
+			moleculesShaderProgram->setUniformValue("u_lights[0].Strength", QVector3D(m_lightDiffuseIntensity, m_lightDiffuseIntensity, m_lightDiffuseIntensity));
 			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffStart", 100.0f);
 			moleculesShaderProgram->setUniformValue("u_lights[0].FalloffEnd", 200.0f);
 			moleculesShaderProgram->setUniformValue("u_lights[0].Position", QVector3D(0.0f, 0.0f, -100.0f));
-			moleculesShaderProgram->setUniformValue("u_ambientIntensity", QVector3D(0.25f, 0.25f, 0.25f));
+			moleculesShaderProgram->setUniformValue("u_ambientIntensity", QVector3D(m_lightAmbientIntensity, m_lightAmbientIntensity, m_lightAmbientIntensity));
 		}
 
 		DrawRenderItems(m_renderItemLayers[static_cast<size_t>(RenderLayer::Molecules)], moleculesShaderProgram);
@@ -79,6 +79,22 @@ void Graphics::AddRenderItem(std::unique_ptr<IRenderItem>&& renderItem, std::ini
 
 	m_allRenderItems.push_back(std::move(renderItem));
 }
+
+IRenderItem* Graphics::GetRenderItem(const std::string& name) const
+{
+	auto findRenderItemLambda =
+		[&name](const std::unique_ptr<IRenderItem>& renderItem)
+	{
+		return renderItem->GetName() == name;
+	};
+
+	auto location = std::find_if(m_allRenderItems.begin(), m_allRenderItems.end(), findRenderItemLambda);
+	if (location == m_allRenderItems.end())
+		ThrowEngineException(L"Couldn't find render item with name = " + Utilities::StringToWString(name));
+
+	return location->get();
+}
+
 void Graphics::ClearAllRenderItems()
 {
 	for (auto& renderLayer : m_renderItemLayers)
@@ -90,6 +106,15 @@ void Graphics::ClearAllRenderItems()
 OpenGL& Graphics::GetOpenGL()
 {
 	return m_openGL;
+}
+
+void Graphics::SetLightDiffuseIntensity(float value)
+{
+	m_lightDiffuseIntensity = value;
+}
+void Graphics::SetLightAmbientIntensity(float value)
+{
+	m_lightAmbientIntensity = value;
 }
 
 void Graphics::InitializeShaders()

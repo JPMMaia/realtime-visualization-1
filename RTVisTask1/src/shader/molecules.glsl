@@ -112,44 +112,6 @@ in vec2 gs_out_textureCoordinates;
 // Output:
 out vec4 fs_out_color;
 
-vec3 MappingFromUVToXYZ(vec2 uv)
-{
-	vec3 xyz;
-
-	float h = 1.0f - abs(uv.x) - abs(uv.y);
-	if (h >= 0.0f)
-	{
-		xyz = vec3(uv.x, uv.y, h);
-	}
-	else
-	{
-		xyz.x = sign(uv.x) * (1.0f - abs(uv.y));
-		xyz.y = sign(uv.y) * (1.0f - abs(uv.y));
-		xyz.z = h;
-	}
-
-	return xyz;
-}
-
-vec2 MappingFromXYZToUV(vec3 xyz)
-{
-	vec2 uv;
-
-	float d = abs(xyz.x) + abs(xyz.y) + abs(xyz.z);
-	if (xyz.z <= 0.0f)
-	{
-		uv.x = xyz.x / d;
-		uv.y = xyz.y / d;
-	}
-	else
-	{
-		uv.x = sign(xyz.x) * (1.0f - abs(xyz.y) / d);
-		uv.y = sign(xyz.y) * (1.0f - abs(xyz.x) / d);
-	}
-
-	return uv;
-}
-
 void main()
 {
 	// Calculate vector from center to the position of this fragment, in impostor coordinates:
@@ -181,7 +143,8 @@ void main()
 	material.FresnelR0 = u_materialFresnelR0;
 	material.Shininess = u_materialShininess;
 
-	// Compute lighting:
+	// Compute lighting as described in 
+	//[Chapter 9, Frank Luna. 2016. Introduction to 3D Game Programming with DirectX 12. Mercury Learning & Information, USA.]:
 	vec3 toEyeDirection = normalize(u_eyePositionW - positionW);
 	vec4 lightIntensity = ComputeLighting(u_lights, material, positionW, normalW, toEyeDirection);
 	vec4 ambientIntensity = vec4(u_ambientIntensity, 1.0f) * vec4(gs_out_color, 1.0f);

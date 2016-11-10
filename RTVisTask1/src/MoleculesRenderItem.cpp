@@ -48,3 +48,8 @@ const std::string& MoleculesRenderItem::GetName() const
 {
 	return this->Name;
 }
+
+void MoleculesRenderItem::SetMaterialShininess(float shininess)
+{
+	this->MaterialConstants.Shininess = shininess;
+}

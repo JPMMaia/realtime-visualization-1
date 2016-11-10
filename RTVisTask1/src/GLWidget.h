@@ -90,25 +90,10 @@ private:
 	std::vector<glm::vec3> m_positions;
 	std::vector<float> m_radii;
 	std::vector<glm::vec3> m_colors;
-	std::vector<glm::vec3> m_ambOcc;
-	
-	// GPU
-	QOpenGLShaderProgram *m_moleculesProgram;
-	QOpenGLVertexArrayObject m_vao_molecules;
-	QOpenGLShader *m_vertexShader;
-	QOpenGLShader *m_geometryShader;
-	QOpenGLShader *m_fragmentShader;
-
-	QOpenGLBuffer m_vbo_pos;
-	QOpenGLBuffer m_vbo_radii;
-	QOpenGLBuffer m_vbo_colors;
-	QOpenGLBuffer m_vbo_ambOcc;
 
 	// ------------------------------
 	
 	QPoint m_lastPos;
-	int m_projMatrixLoc;
-	int m_mvMatrixLoc;
 	
 	QFileSystemWatcher* m_fileWatcher;
 

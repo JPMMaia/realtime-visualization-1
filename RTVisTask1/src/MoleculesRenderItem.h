@@ -12,6 +12,7 @@ namespace RTVis
 		void Render(OpenGLEngine::OpenGL* openGL, QOpenGLShaderProgram* program) const override;
 
 		const std::string& GetName() const override;
+		void SetMaterialShininess(float shininess);
 
 	public:
 		std::string Name;

@@ -19,6 +19,7 @@
 #include "EngineException.h"
 
 #include <QCoreApplication>
+#include "MoleculesRenderItem.h"
 
 const float msPerFrame = 50.0f;
 
@@ -74,10 +75,12 @@ QImage GLWidget::GetImage()
 void GLWidget::SetAmbientFactor(float value)
 {
 	m_ambientFactor = value;
+	m_graphics.SetLightAmbientIntensity(value);
 }
 void GLWidget::SetDiffuseFactor(float value)
 {
 	m_diffuseFactor = value;
+	m_graphics.SetLightDiffuseIntensity(value);
 }
 void GLWidget::SetSpecularFactor(float value)
 {
@@ -90,9 +93,6 @@ void GLWidget::SetIsImposerRendering(bool value)
 
 void GLWidget::Cleanup()
 {
-	makeCurrent();
-	m_moleculesProgram = nullptr;
-	doneCurrent();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent* event)
@@ -358,10 +358,8 @@ void GLWidget::AllocateGPUBuffer(int frameNumber)
 		}
 	}
 
-	m_moleculesScene.Initialize(&m_graphics, (*m_animation)[frameNumber]);
-
 	// Allocating GPU memory for rendering:
-	// TODO allocate data (positions, radii, colors)
+	m_moleculesScene.Initialize(&m_graphics, (*m_animation)[frameNumber]);
 
 	// Display used GPU memory:
 	{
