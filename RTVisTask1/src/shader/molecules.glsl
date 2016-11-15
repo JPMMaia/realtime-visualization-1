@@ -123,7 +123,8 @@ void main()
 		discard;
 
 	// Calculate new z value in world space:
-	float z = gs_out_positionW.z - (1.0f - fromCenterDistanceI) * gs_out_radius;
+	float impostorZ = sqrt(1.0f - fromCenterDistanceI*fromCenterDistanceI);
+	float z = gs_out_positionW.z - impostorZ * gs_out_radius;
 	vec3 positionW = vec3(gs_out_positionW.x, gs_out_positionW.y, z);
 
 	// Calculate the position in clip space and then perform the perspective divide on z to calculate the correct depth of the fragment:
@@ -131,7 +132,7 @@ void main()
 	gl_FragDepth = positionH.z / positionH.w;
 
 	// Calculate normal in view space:
-	vec3 normalV = vec3(fromCenterI.x, fromCenterI.y, 1.0f - fromCenterDistanceI);
+	vec3 normalV = vec3(fromCenterI.x, fromCenterI.y, impostorZ);
 
 	// Transform normal from view space to world space:
 	vec3 normalW = (u_inverseViewMatrix * vec4(normalV, 0.0f)).xyz;
